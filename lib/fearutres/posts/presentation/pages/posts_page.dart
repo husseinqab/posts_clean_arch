@@ -23,8 +23,7 @@ class PostsPage extends StatelessWidget {
             subtitle: Text(post.body),
             trailing: Text(post.id.toString()),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CommentsPage(postId: post.id)));
+              Navigator.pushNamed(context, '/comments',arguments: post.id);
             },
           );
         });

@@ -4,6 +4,7 @@ import 'package:posts_clean_arch/fearutres/posts/presentation/bloc/post_bloc.dar
 import 'package:posts_clean_arch/fearutres/posts/presentation/pages/posts_page.dart';
 import 'package:posts_clean_arch/fearutres/users/presentation/pages/users_page.dart';
 import 'package:posts_clean_arch/injection_container.dart';
+import 'package:posts_clean_arch/route_generator.dart';
 
 import 'injection_container.dart' as di;
 
@@ -16,9 +17,10 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Material App',
-      home: HomePage(),
+      initialRoute: '/',
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
@@ -36,8 +38,7 @@ class HomePage extends StatelessWidget {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => UsersPage()));
+                  Navigator.pushNamed(context, "/users");
                 },
                 icon: const Icon(Icons.person))
           ],
