@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/core/network/network_info.dart';
 import 'package:posts_clean_arch/fearutres/posts/data/datasources/post_remote_datasource.dart';
 import 'package:posts_clean_arch/fearutres/posts/data/repositories/post_repository_impl.dart';
@@ -30,7 +31,6 @@ void init() {
   //data
   sl.registerLazySingleton<PostRemoteDataSource>(
       () => PostRemoteDataSourceImpl(client: sl()));
-
   //Users
   //bloc
   sl.registerFactory(() => UserBloc(getAllUsers: sl()));
@@ -44,6 +44,7 @@ void init() {
 
 
   //core
+  sl.registerLazySingleton<RestHelper>(() => HttpHelper(client: sl()));
   sl.registerLazySingleton<NetworkInfo>(
       () => NetworkInfoImpl(internetConnectionChecker: sl()));
   //external
