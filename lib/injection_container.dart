@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:posts_clean_arch/core/dioHelper.dart';
+import 'package:posts_clean_arch/core/generic_api_calls.dart';
 import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/core/network/network_info.dart';
 import 'package:posts_clean_arch/fearutres/posts/data/datasources/post_remote_datasource.dart';
@@ -27,7 +30,7 @@ void init() {
   sl.registerLazySingleton(() => GetPostComments(postRepository: sl()));
   //repo
   sl.registerLazySingleton<PostRepository>(
-      () => PostRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()));
+      () => PostRepositoryImpl(remoteDataSource: sl(), callApi: sl()));
   //data
   sl.registerLazySingleton<PostRemoteDataSource>(
       () => PostRemoteDataSourceImpl(client: sl()));
@@ -38,17 +41,20 @@ void init() {
   sl.registerLazySingleton(() => GetAllUsers(userRepository: sl()));
   //repo
   sl.registerLazySingleton<UserRepository>(
-          () => UserRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()));
+          () => UserRepositoryImpl(remoteDataSource: sl(), callApi: sl()));
   //data
   sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(client: sl()));
 
 
   //core
   sl.registerLazySingleton<RestHelper>(() => HttpHelper(client: sl()));
+  sl.registerLazySingleton(() => GenericCall(networkInfo: sl()));
+  // sl.registerLazySingleton<RestHelper>(() => DioHelper());
   sl.registerLazySingleton<NetworkInfo>(
       () => NetworkInfoImpl(internetConnectionChecker: sl()));
   //external
   sl.registerLazySingleton(() => http.Client());
+  // sl.registerLazySingleton(() => Dio());
   sl.registerLazySingleton(() => InternetConnectionChecker());
 
 

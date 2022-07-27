@@ -8,3 +8,6 @@ abstract class Failure extends Equatable {
 
 class ServerFailure extends Failure {}
 class NoInternetFailure extends Failure {}
+class UnAurhtorizedFailure extends Failure {}
+class NotFoundFailure extends Failure {}
+class UnExpectedFailure extends Failure {}

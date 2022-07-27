@@ -15,13 +15,8 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource {
 
   @override
   Future<List<UserModel>> getAllUsers() async {
-    http.Response response = await client.get("https://jsonplaceholder.typicode.com/users");
-
-    if (response.statusCode != 200){
-      throw ServerException();
-    }
-
-    return userFromJson(response.body);
+   var body = await client.get("https://jsonplaceholder.typicode.com/users");
+    return userFromJson(body);
   }
 
 }

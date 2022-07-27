@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/fearutres/posts/domain/usecases/get_post_comments.dart';
 
@@ -11,34 +11,39 @@ abstract class PostRemoteDataSource {
   /// calls the https://jsonplaceholder.typicode.com/posts endpoint
   /// Throws a [ServerException] for all error codes
   Future<List<PostModel>> getAllPosts();
+
   Future<List<CommentModel>> getPostComments(Params params);
 }
 
 class PostRemoteDataSourceImpl implements PostRemoteDataSource {
   final RestHelper client;
+
   // final http.Client client;
 
   PostRemoteDataSourceImpl({required this.client});
 
   @override
   Future<List<PostModel>> getAllPosts() async {
-    http.Response response = await client.get('https://jsonplaceholder.typicode.com/posts');
+    // RestResponse response = await client.get('https://jsonplaceholder.typicode.com/posts');
+    try {
+      var body = await client.get('https://jsonplaceholder.typicode.com/posts');
 
-    if (response.statusCode != 200){
-      throw ServerException();
+      return List<PostModel>.from(
+          json.decode(body).map((x) => PostModel.fromJson(x)));
+    } catch(_){
+      throw UnExpectedException();
     }
-    return List<PostModel>.from(json.decode(response.body).map((x) => PostModel.fromJson(x)));
   }
 
   @override
   Future<List<CommentModel>> getPostComments(Params params) async {
     // TODO: implement getPostComments
-    http.Response response = await client.get('https://jsonplaceholder.typicode.com/posts/${params.postId}/comments');
+    // RestResponse response = await client.get(
+    //     'https://jsonplaceholder.typicode.com/posts/${params.postId}/comments');
+    var body = await client.get(
+        'https://jsonplaceholder.typicode.com/posts/${params.postId}/comments');
 
-    if (response.statusCode != 200){
-      throw ServerException();
-    }
-
-    return List<CommentModel>.from(json.decode(response.body).map((x) => CommentModel.fromJson(x)));
+    return List<CommentModel>.from(
+        json.decode(body).map((x) => CommentModel.fromJson(x)));
   }
 }

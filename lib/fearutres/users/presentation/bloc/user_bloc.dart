@@ -20,8 +20,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         final eitherFailureOrUsers = await getAllUsers(NoParams());
 
         eitherFailureOrUsers.fold(
-            (l) => emit(UserFailed(message: Helpers.mapFailureToMessage(l))),
-            (r) => emit(UsersSucceeded(users: r)));
+            (failure) => emit(UserFailed(message: Helpers.mapFailureToMessage(failure))),
+            (users) => emit(UsersSucceeded(users: users)));
       }
     });
   }
