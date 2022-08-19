@@ -6,6 +6,16 @@ import 'package:posts_clean_arch/core/dioHelper.dart';
 import 'package:posts_clean_arch/core/generic_api_calls.dart';
 import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/core/network/network_info.dart';
+import 'package:posts_clean_arch/fearutres/airlines/data/datasources/airline_remote_datasource.dart';
+import 'package:posts_clean_arch/fearutres/airlines/data/repositories/AirlineRepositoryImpl.dart';
+import 'package:posts_clean_arch/fearutres/airlines/domain/repositories/airline_repository.dart';
+import 'package:posts_clean_arch/fearutres/airlines/domain/usecases/get_all_airlines.dart';
+import 'package:posts_clean_arch/fearutres/airlines/presentation/bloc/airline_bloc.dart';
+import 'package:posts_clean_arch/fearutres/passengers/data/datasources/passenger_remote_datasource.dart';
+import 'package:posts_clean_arch/fearutres/passengers/data/repositories/passenger_repository_impl.dart';
+import 'package:posts_clean_arch/fearutres/passengers/domain/repositories/passengers_repository.dart';
+import 'package:posts_clean_arch/fearutres/passengers/domain/usecases/get_passengers.dart';
+import 'package:posts_clean_arch/fearutres/passengers/presentation/bloc/passengers_bloc.dart';
 import 'package:posts_clean_arch/fearutres/posts/data/datasources/post_remote_datasource.dart';
 import 'package:posts_clean_arch/fearutres/posts/data/repositories/post_repository_impl.dart';
 import 'package:posts_clean_arch/fearutres/posts/domain/repositories/post_repository.dart';
@@ -22,7 +32,7 @@ import 'package:posts_clean_arch/fearutres/users/presentation/bloc/user_bloc.dar
 final sl = GetIt.instance;
 
 void init() {
-  //feature: Posts
+  ///feature: Posts
   sl.registerFactory(() => PostBloc(sl()));
   sl.registerFactory(() => CommentBloc(sl()));
   //use cases
@@ -34,7 +44,7 @@ void init() {
   //data
   sl.registerLazySingleton<PostRemoteDataSource>(
       () => PostRemoteDataSourceImpl(client: sl()));
-  //Users
+  ///feature: Users
   //bloc
   sl.registerFactory(() => UserBloc(getAllUsers: sl()));
   //use-case
@@ -45,6 +55,23 @@ void init() {
   //data
   sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSourceImpl(client: sl()));
 
+  ///feature: Airlines
+  sl.registerFactory(() => AirlineBloc(sl()));
+  //usecase
+  sl.registerLazySingleton(() => GetAllAirlines(airlineRepository: sl()));
+  //repo
+  sl.registerLazySingleton<AirlineRepository>(() => AirlineRepositoryImpl(callApi: sl(),dataSource: sl()));
+  //data
+  sl.registerLazySingleton<AirlineRemoteDataSource>(() => AirlineRemoteDataSourceImpl(client: sl()));
+
+  ///feature: Passengers
+  sl.registerFactory(() => PassengersBloc(sl()));
+  //usecase
+  sl.registerLazySingleton(() => GetPassengers(passengersRepository: sl()));
+  //repo
+  sl.registerLazySingleton<PassengerRepository>(() => PassengerRepositoryImpl(callApi: sl(),remoteDataSource: sl()));
+  //data
+  sl.registerLazySingleton<PassengersRemoteDataSource>(() => PassengersRemoteDataSourceImpl(client: sl()));
 
   //core
   sl.registerLazySingleton<RestHelper>(() => HttpHelper(client: sl()));

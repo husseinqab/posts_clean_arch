@@ -27,7 +27,7 @@ class HttpHelper extends RestHelper {
   ) async {
     try {
       Response httpResponse =
-          await client.get(Uri.parse(url), headers: headers);
+          await client.get(Uri.parse(url));
       //return httpResponse.body;
        return _handleStatusCode(httpResponse);
     } catch (_) {

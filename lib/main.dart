@@ -1,8 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:posts_clean_arch/fearutres/posts/presentation/bloc/post_bloc.dart';
 import 'package:posts_clean_arch/fearutres/posts/presentation/pages/posts_page.dart';
-import 'package:posts_clean_arch/fearutres/users/presentation/pages/users_page.dart';
 import 'package:posts_clean_arch/injection_container.dart';
 import 'package:posts_clean_arch/route_generator.dart';
 
@@ -17,7 +17,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  const MaterialApp(
       title: 'Material App',
       initialRoute: '/',
       onGenerateRoute: RouteGenerator.generateRoute,
@@ -40,7 +40,13 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, "/users");
                 },
-                icon: const Icon(Icons.person))
+                icon: const Icon(Icons.person)),
+            IconButton(onPressed: (){
+              Navigator.pushNamed(context, "/airlines");
+            }, icon: const Icon(Icons.airplanemode_active)),
+            IconButton(onPressed: (){
+              Navigator.pushNamed(context, "/passengers");
+            }, icon: const Icon(Icons.people))
           ],
         ),
         body: BlocBuilder<PostBloc, PostState>(
