@@ -5,6 +5,5 @@ import 'package:posts_clean_arch/fearutres/passengers/domain/usecases/get_passen
 import '../../../../core/errors/failure.dart';
 
 abstract class PassengerRepository {
-  Future<Either<Failure, PassengerResponse>> getPassengers(
-      GetPassengersParams params);
+  Future<Either<Failure, PassengerResponse>> getPassengers(int page);
 }

@@ -6,6 +6,27 @@ import 'package:posts_clean_arch/main.dart';
 import 'fearutres/airlines/presentation/pages/airlines_page.dart';
 import 'fearutres/passengers/presentation/pages/passengers_page.dart';
 
+class RouteHelper {
+  static animatedPage(Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (_, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        const begin = Offset(0.0, 1.0);
+        const end = Offset.zero;
+        const curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
+    );
+  }
+}
+
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
@@ -16,29 +37,19 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const HomePage());
       case '/users':
         // Validation of correct data type
-        return MaterialPageRoute(
-          builder: (_) => UsersPage(),
-        );
+        return RouteHelper.animatedPage(const UsersPage());
       case '/comments':
         // Validation of correct data type
         if (args is int) {
-          return MaterialPageRoute(
-            builder: (_) => CommentsPage(
-              postId: args,
-            ),
-          );
+          return RouteHelper.animatedPage(CommentsPage(postId: args));
         }
         // If args is not of the correct type, return an error page.
         // You can also throw an exception while in development.
         return _errorRoute();
       case "/airlines":
-        return MaterialPageRoute(
-          builder: (_) => AirlinesPage(),
-        );
+        return RouteHelper.animatedPage(const AirlinesPage());
       case "/passengers":
-        return MaterialPageRoute(
-          builder: (_) => const PassengersPage(),
-        );
+        return RouteHelper.animatedPage(const PassengersPage());
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

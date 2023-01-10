@@ -5,11 +5,9 @@ abstract class PassengersEvent extends Equatable {
 }
 
 class GetPassengersEvent extends PassengersEvent {
-  final GetPassengersParams params;
-
-  const GetPassengersEvent({required this.params});
+  const GetPassengersEvent();
 
   @override
   // TODO: implement props
-  List<Object?> get props => [params];
+  List<Object?> get props => [];
 }

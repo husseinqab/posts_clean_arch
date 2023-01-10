@@ -32,7 +32,7 @@ class AirlineModel extends Airline {
         logo: json["logo"],
         slogan: json["slogan"],
         headQuaters: json["head_quaters"],
-        website: json["website"],
+        website: json["website"], 
         established: json["established"],
       );
 

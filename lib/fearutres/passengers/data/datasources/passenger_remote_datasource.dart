@@ -7,7 +7,7 @@ import '../../../../core/httpHelper.dart';
 abstract class PassengersRemoteDataSource {
   /// calls the https://jsonplaceholder.typicode.com/posts endpoint
   /// Throws a [ServerException] for all error codes
-  Future<PassengerResponseModel> getPassengers(GetPassengersParams params);
+  Future<PassengerResponseModel> getPassengers(int page);
 }
 
 class PassengersRemoteDataSourceImpl implements PassengersRemoteDataSource {
@@ -16,11 +16,10 @@ class PassengersRemoteDataSourceImpl implements PassengersRemoteDataSource {
   PassengersRemoteDataSourceImpl({required this.client});
 
   @override
-  Future<PassengerResponseModel> getPassengers(
-      GetPassengersParams params) async {
+  Future<PassengerResponseModel> getPassengers(int page) async {
     try {
       var body = await client.get(
-          'https://api.instantwebtools.net/v1/passenger?page=${params.page}&size=10');
+          'https://api.instantwebtools.net/v1/passenger?page=$page&size=10');
 
       return passengerFromJson(body);
     } catch (_) {

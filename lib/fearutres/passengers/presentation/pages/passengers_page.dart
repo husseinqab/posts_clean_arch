@@ -17,8 +17,7 @@ class PassengersPage extends StatelessWidget {
       ),
       body: BlocProvider<PassengersBloc>(
         create: (context) => sl<PassengersBloc>()
-          ..add(GetPassengersEvent(
-              params: GetPassengersParams())),
+          ..add(GetPassengersEvent()),
         child: PassengersList(),
       ),
     );
@@ -35,8 +34,6 @@ class PassengersList extends StatefulWidget {
 class _PassengersListState extends State<PassengersList> {
   late ScrollController controller;
 
-  List<Passenger> passengers = [];
-
   @override
   void initState() {
     // TODO: implement initState
@@ -51,33 +48,42 @@ class _PassengersListState extends State<PassengersList> {
   }
 
   void _scrollListener() {
-    if (controller.position.extentAfter < 500) {
-      context.read<PassengersBloc>().add(GetPassengersEvent(params: GetPassengersParams()));
+    if (_isBottom) {
+      context.read<PassengersBloc>().add(GetPassengersEvent());
     }
+  }
+
+  bool get _isBottom {
+    if (!controller.hasClients) return false;
+    final maxScroll = controller.position.maxScrollExtent;
+    final currentScroll = controller.offset;
+    return currentScroll >= maxScroll * 0.5;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PassengersBloc, PassengersState>(
       builder: (context, state) {
-        if (state is PassengersInitial) {
-          return const Center(child: Text('Posts page'));
-        } else if (state is PassengersLoading) {
+        if (state.state == RequestState.initial) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is PassengersLoaded) {
-          passengers = state.passengers;
+        } else if (state.state == RequestState.succeeded) {
           return ListView.builder(
               controller: controller,
-              itemCount: passengers.length,
+              itemCount: state.hasReachedMax ? state.passengers.length : state.passengers.length + 1,
               itemBuilder: (context, index) {
+
+                if (index >= state.passengers.length){
+                  return Center(child: CircularProgressIndicator());
+                }
                 Passenger passenger =
-                passengers[index];
+                state.passengers[index];
+
                 return ListTile(
                     title: Text(passenger.id.toString()),
                     subtitle: Text(passenger.name),
                 trailing: Text(index.toString()),);
               });
-        } else if (state is PassengerFailed) {
+        } else if (state.state == RequestState.failed) {
           return Center(child: Text(state.message));
         }
         return const SizedBox();
