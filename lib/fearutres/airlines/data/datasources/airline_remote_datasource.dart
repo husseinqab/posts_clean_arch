@@ -15,7 +15,7 @@ class AirlineRemoteDataSourceImpl extends AirlineRemoteDataSource {
   Future<List<AirlineModel>> getAllAirlines() async {
     try {
       var body = await client.get('https://api.instantwebtools.net/v1/airlines?page=0&size=10');
-
+      var ok = true;
       return airlineFromJson(body);
     } catch(e){
       throw UnExpectedException();

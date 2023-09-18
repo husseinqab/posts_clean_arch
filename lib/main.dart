@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,16 +10,19 @@ import 'package:posts_clean_arch/route_generator.dart';
 
 import 'core/simple_bloc_observer.dart';
 import 'injection_container.dart' as di;
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  di.init();
-  BlocOverrides.runZoned(
-        () {
-      runApp(MyApp());
-    },
-    blocObserver: SimpleBlocObserver(),
-  );
-  // runApp(MyApp());
+Future<void> main() async {
+  // creates a zone
+  await runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    // Initialize other stuff here...
+    di.init();
+    Bloc.observer = SimpleBlocObserver();
+    runApp(MyApp());
+    // or here
+    runApp(MyApp());
+  }, (exception, stackTrace) async {
+     debugPrint(exception.toString());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -72,7 +77,12 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, "/passengers");
                 },
-                icon: const Icon(Icons.people))
+                icon: const Icon(Icons.people)),
+            IconButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/KYC");
+                },
+                icon: const Icon(Icons.insert_drive_file))
           ],
         ),
         body: BlocBuilder<PostBloc, PostState>(

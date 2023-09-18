@@ -3,6 +3,7 @@ import 'package:posts_clean_arch/fearutres/posts/presentation/pages/posts_page.d
 import 'package:posts_clean_arch/fearutres/users/presentation/pages/users_page.dart';
 import 'package:posts_clean_arch/main.dart';
 
+import 'fearutres/Kyc/presentation/pages/kyc_page.dart';
 import 'fearutres/airlines/presentation/pages/airlines_page.dart';
 import 'fearutres/passengers/presentation/pages/passengers_page.dart';
 
@@ -50,6 +51,8 @@ class RouteGenerator {
         return RouteHelper.animatedPage(const AirlinesPage());
       case "/passengers":
         return RouteHelper.animatedPage(const PassengersPage());
+      case "/KYC":
+        return RouteHelper.animatedPage(const KycPage());
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

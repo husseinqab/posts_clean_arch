@@ -26,7 +26,7 @@ class PostRemoteDataSourceImpl implements PostRemoteDataSource {
   Future<List<PostModel>> getAllPosts() async {
     // RestResponse response = await client.get('https://jsonplaceholder.typicode.com/posts');
     try {
-      var body = await client.get('https://jsonplaceholder.typicode.com/posts');
+      var body = await  client.get('https://jsonplaceholder.typicode.com/posts');
 
       return List<PostModel>.from(
           json.decode(body).map((x) => PostModel.fromJson(x)));
