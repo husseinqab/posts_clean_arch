@@ -27,10 +27,10 @@ class KycBody extends StatefulWidget {
 
 class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
   static List<Widget> tabBarViews = <Widget>[
+    const UpdateUserPage(),
     const RegisterInStrigaPage(),
     const VerifyMailPage(),
     const VerifyPhonePage(),
-    const UpdateUserPage()
   ];
 
   late TabController _tabController;
@@ -67,29 +67,32 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
         child: RoundedButton(
           title: 'Next',
           onPressed: () {
-
             if (_tabController.index < tabBarViews.length - 1) {
-              if (_tabController.index == 0){
-                context.read<KycProvider>().validateRegister(context);
-                if (context.read<KycProvider>().isValidRegister()){
+              if (_tabController.index == 0) {
+                context.read<KycProvider>().validateUpdateData(context);
+                //context.read<KycProvider>().validateRegister(context);
+                if (context.read<KycProvider>().isValidRegister()) {
                   _tabController.animateTo(_tabController.index + 1);
                 }
               }
 
-              if (_tabController.index == 1){
+              if (_tabController.index == 1) {
                 context.read<KycProvider>().validateEmailVCode(context);
-                if (context.read<KycProvider>().isValidEmailCode()){
+                if (context.read<KycProvider>().isValidEmailCode()) {
                   _tabController.animateTo(_tabController.index + 1);
                 }
               }
 
-              if (_tabController.index == 2){
+              if (_tabController.index == 2) {
                 context.read<KycProvider>().validatePhoneVCode(context);
-                if (context.read<KycProvider>().isValidPhoneCode()){
+                if (context.read<KycProvider>().isValidPhoneCode()) {
                   _tabController.animateTo(_tabController.index + 1);
                 }
               }
 
+              if (_tabController.index == 3) {
+                context.read<KycProvider>().validateUpdateData(context);
+              }
             }
           },
         ),
@@ -116,7 +119,7 @@ class RegisterInStrigaPage extends StatelessWidget {
                 height: 20,
                 corner: 10,
                 hint: 'First Name',
-                textChanged: (value){
+                textChanged: (value) {
                   provider.setFirstName(value);
                 },
               ),
@@ -126,7 +129,7 @@ class RegisterInStrigaPage extends StatelessWidget {
                 height: 20,
                 corner: 10,
                 hint: 'Last Name',
-                textChanged: (value){
+                textChanged: (value) {
                   provider.setLastName(value);
                 },
               ),
@@ -136,7 +139,7 @@ class RegisterInStrigaPage extends StatelessWidget {
                 height: 20,
                 corner: 10,
                 hint: 'Email',
-                textChanged: (value){
+                textChanged: (value) {
                   provider.setEmail(value);
                 },
               ),
@@ -146,7 +149,7 @@ class RegisterInStrigaPage extends StatelessWidget {
                 height: 20,
                 corner: 10,
                 hint: 'Phone Number',
-                textChanged: (value){
+                textChanged: (value) {
                   provider.setPhone(value);
                 },
               ),
@@ -163,33 +166,30 @@ class VerifyMailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Consumer<KycProvider>(builder: (_,provider,child) {
-        return Form(
-          key: provider.emailVFormKey,
-          child: Column(
-            children: [
-              const Text('We sent a 6 digit verification code to your mail'),
-              const SizedBox(
-                height: 10,
-              ),
-              DecoratedTextField(
-                validator: provider.emailVCodeValidator,
-                hint: 'Verification Code',
-                corner: 10,
-                height: 20,
-                textChanged: (value){
-                  provider.setEmailVCode(value);
-                },
-              )
-
-            ],
-          ),
-        );
-      })
-    );
+        padding: const EdgeInsets.all(16.0),
+        child: Consumer<KycProvider>(builder: (_, provider, child) {
+          return Form(
+            key: provider.emailVFormKey,
+            child: Column(
+              children: [
+                const Text('We sent a 6 digit verification code to your mail'),
+                const SizedBox(
+                  height: 10,
+                ),
+                DecoratedTextField(
+                  validator: provider.emailVCodeValidator,
+                  hint: 'Verification Code',
+                  corner: 10,
+                  height: 20,
+                  textChanged: (value) {
+                    provider.setEmailVCode(value);
+                  },
+                )
+              ],
+            ),
+          );
+        }));
   }
 }
 
@@ -198,31 +198,30 @@ class VerifyPhonePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Consumer<KycProvider>(builder: (_,provider,child) {
-        return Form(
-          key: provider.phoneVFormKey,
-          child: Column(
-            children: [
-              const Text('We sent a 6 digit verification code sms to your phone]'),
-              const SizedBox(
-                height: 10,
-              ),
-              DecoratedTextField(
-                corner: 10,
-                hint: 'Verification Code',
-                height: 20,
-                textChanged: (value){
-                  provider.setPhoneVCode(value);
-                },
-              ),
-            ],
-          ),
-        );
-      })
-    );
+        padding: const EdgeInsets.all(16.0),
+        child: Consumer<KycProvider>(builder: (_, provider, child) {
+          return Form(
+            key: provider.phoneVFormKey,
+            child: Column(
+              children: [
+                const Text(
+                    'We sent a 6 digit verification code sms to your phone]'),
+                const SizedBox(
+                  height: 10,
+                ),
+                DecoratedTextField(
+                  corner: 10,
+                  hint: 'Verification Code',
+                  height: 20,
+                  textChanged: (value) {
+                    provider.setPhoneVCode(value);
+                  },
+                ),
+              ],
+            ),
+          );
+        }));
   }
 }
 
@@ -234,171 +233,194 @@ class UpdateUserPage extends StatefulWidget {
 }
 
 class _UpdateUserPageState extends State<UpdateUserPage> {
-  String occupation = '';
-  String sourceOfFunds = '';
-  String purposeOfAccount = '';
-  String annualIncome = '';
-  String annualOutcome = '';
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            RoundedButton(
-              title: 'Document issuing country',
-              backgroundColor: Colors.white,
-              titleColor: Colors.black,
-              onPressed: () {
-                showCountryPicker(
-                  context: context,
-                  showPhoneCode: false,
-                  // optional. Shows phone code before the country name.
-                  onSelect: (Country country) {
-                    print('Select country: ${country.displayName}');
-                  },
-                );
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            RoundedButton(
-              title: 'Nationality',
-              backgroundColor: Colors.white,
-              titleColor: Colors.black,
-              onPressed: () {
-                showCountryPicker(
-                  context: context,
-                  showPhoneCode: false,
-                  // optional. Shows phone code before the country name.
-                  onSelect: (Country country) {
-                    print('Select country: ${country.displayName}');
-                  },
-                );
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            CustomDropDownWidget(
-              dropdownValue: occupation,
-              hint: 'Occupation',
-              items: const ['Public Sector', 'Audit'],
-              onChanged: (value) {
-                setState(() {
-                  occupation = value!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            CustomDropDownWidget(
-              dropdownValue: sourceOfFunds,
-              hint: 'Source Of funds',
-              items: const ['Personal Savings', 'FamilySavings'],
-              onChanged: (value) {
-                setState(() {
-                  sourceOfFunds = value!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            RoundedButton(
-              title: 'Place Of Birth',
-              backgroundColor: Colors.white,
-              titleColor: Colors.black,
-              onPressed: () {
-                showCountryPicker(
-                  context: context,
-                  showPhoneCode: false,
-                  // optional. Shows phone code before the country name.
-                  onSelect: (Country country) {
-                    print('Select country: ${country.displayName}');
-                  },
-                );
-              },
-            ),
-            SizedBox(height: 20),
-            CustomDropDownWidget(
-              dropdownValue: annualIncome,
-              hint: 'Annually Incoming transaction volume',
-              items: const [
-                'Between 10000 abd 15000',
-                'Between 5000 and 10000'
-              ],
-              onChanged: (value) {
-                setState(() {
-                  annualIncome = value!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            CustomDropDownWidget(
-              dropdownValue: annualOutcome,
-              hint: 'Annually Incoming transaction volume',
-              items: const [
-                'Between 10000 abd 15000',
-                'Between 5000 and 10000'
-              ],
-              onChanged: (value) {
-                setState(() {
-                  annualOutcome = value!;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            DecoratedTextField(
-              corner: 10,
-              hint: 'Address Line 1',
-              height: 20,
-            ),
-            SizedBox(height: 20),
-            DecoratedTextField(
-              corner: 10,
-              hint: 'Address Line 2',
-              height: 20,
-            ),
-            SizedBox(height: 20),
-            DecoratedTextField(
-              corner: 10,
-              hint: 'City',
-              height: 20,
-            ),
-            SizedBox(height: 20),
-            DecoratedTextField(
-              corner: 10,
-              hint: 'Postal code',
-              height: 20,
-            ),
-            SizedBox(height: 20),
-            DecoratedTextField(
-              corner: 10,
-              hint: 'Province',
-              height: 20,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            RoundedButton(
-              title: 'Nationality',
-              backgroundColor: Colors.white,
-              titleColor: Colors.black,
-              onPressed: () {
-                showCountryPicker(
-                  context: context,
-                  showPhoneCode: false,
-                  // optional. Shows phone code before the country name.
-                  onSelect: (Country country) {
-                    print('Select country: ${country.displayName}');
-                  },
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+          child: Consumer<KycProvider>(builder: (_, provider, child) {
+        return Form(
+          key: provider.updateDataFormKey,
+          child: Column(
+            children: [
+              DecoratedTextField(
+                onTap: (){
+                  showCountryPicker(
+                    context: context,
+                    showPhoneCode: false,
+                    // optional. Shows phone code before the country name.
+                    onSelect: (Country country) {
+                      provider.documentIssuingCountry = country;
+                    },
+                  );
+                },
+                validator: provider.documentIssueValidator,
+                corner: 10,
+                hint: 'Document Issuing Country',
+                height: 20,
+                controller: provider.documentIssueController,
+                isReadOnly: true,
+              ),
+              const SizedBox(height: 20),
+              DecoratedTextField(
+                onTap: (){
+                  showCountryPicker(
+                    context: context,
+                    showPhoneCode: false,
+                    // optional. Shows phone code before the country name.
+                    onSelect: (Country country) {
+                      provider.nationality = country;
+                    },
+                  );
+                },
+                validator: provider.nationalityValidator,
+                corner: 10,
+                hint: 'Nationality',
+                height: 20,
+                controller: provider.nationalityController,
+                isReadOnly: true,
+              ),
+              const SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.occupationValidator,
+                dropdownValue: provider.occupation,
+                hint: 'Occupation',
+                items: const ['Public Sector', 'Audit'],
+                onChanged: (value) {
+                  provider.occupation(value);
+                },
+              ),
+              const SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.sourceOfFundsValidator,
+                dropdownValue: provider.sourceOfFunds,
+                hint: 'Source Of funds',
+                items: const ['Personal Savings', 'FamilySavings'],
+                onChanged: (value) {
+                  provider.sourceOfFunds(value);
+                },
+              ),
+              const SizedBox(height: 20),
+              DecoratedTextField(
+                onTap: (){
+                  showCountryPicker(
+                    context: context,
+                    showPhoneCode: false,
+                    // optional. Shows phone code before the country name.
+                    onSelect: (Country country) {
+                      provider.placeOfBirth = country;
+                    },
+                  );
+                },
+                validator: provider.placeOfBirthValidator,
+                corner: 10,
+                hint: 'Nationality',
+                height: 20,
+                controller: provider.placeOfBirthController,
+                isReadOnly: true,
+              ),
+              SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.expectedIncomingValidator,
+                dropdownValue: provider.expectedIncomingTxVolumeYearly,
+                hint: provider.expectedIncomingTxVolumeYearly,
+                items: const [
+                  'Between 10000 abd 15000',
+                  'Between 5000 and 10000'
+                ],
+                onChanged: (value) {
+                  provider.expectedIncomingTxVolumeYearly(value);
+                },
+              ),
+              const SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.expectedOutgoingValidator,
+                dropdownValue: provider.expectedOutgoingTxVolumeYearly,
+                hint: provider.expectedOutgoingTxVolumeYearly,
+                items: const [
+                  'Between 10000 abd 15000',
+                  'Between 5000 and 10000'
+                ],
+                onChanged: (value) {
+                  provider.expectedOutgoingTxVolumeYearly(value);
+
+                },
+              ),
+              const SizedBox(height: 20),
+              DecoratedTextField(
+                validator: provider.addressLine1NameValidator,
+                corner: 10,
+                hint: 'Address Line 1',
+                height: 20,
+                textChanged: (value){
+                  provider.addressLine1 = value;
+                },
+              ),
+              SizedBox(height: 20),
+              DecoratedTextField(
+                validator: provider.addressLine2NameValidator,
+                corner: 10,
+                hint: 'Address Line 2',
+                height: 20,
+                textChanged: (value){
+                  provider.addressLine2 = value;
+                },
+              ),
+              SizedBox(height: 20),
+              DecoratedTextField(
+                validator: provider.cityNameValidator,
+                corner: 10,
+                hint: 'City',
+                height: 20,
+                textChanged: (value) {
+                  provider.city = value;
+                },
+              ),
+              SizedBox(height: 20),
+              DecoratedTextField(
+                validator: provider.postalCodeValidator,
+                corner: 10,
+                hint: 'Postal code',
+                height: 20,
+                textChanged: (value) {
+                  provider.postalCode = value;
+                },
+              ),
+              SizedBox(height: 20),
+              DecoratedTextField(
+                validator: provider.provinceCodeValidator,
+                corner: 10,
+                hint: 'Province',
+                height: 20,
+                textChanged: (value) {
+                  provider.province = value;
+                },
+              ),
+              SizedBox(height: 20),
+              DecoratedTextField(
+                onTap: (){
+                  showCountryPicker(
+                    context: context,
+                    showPhoneCode: false,
+                    // optional. Shows phone code before the country name.
+                    onSelect: (Country country) {
+                      provider.country = country;
+                    },
+                  );
+                },
+                validator: provider.countryValidator,
+                corner: 10,
+                hint: 'Address Country',
+                height: 20,
+                controller: provider.countryController,
+                isReadOnly: true,
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+        );
+      })),
     );
   }
 }

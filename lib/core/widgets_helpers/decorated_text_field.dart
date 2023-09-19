@@ -34,7 +34,7 @@ class DecoratedTextField extends StatefulWidget {
   TextStyle? hintStyle;
   bool isRequired;
   String? Function(String?)? validator;
-
+  void Function()? onTap;
   DecoratedTextField(
       {super.key,
       this.hint = "",
@@ -50,8 +50,8 @@ class DecoratedTextField extends StatefulWidget {
       this.isAutoFocus = false,
       this.prefixValue = "",
       this.textChanged,
-      this.textStyle /*= KStyle.KLargeBodyStyle*/,
-      this.hintStyle /*= KStyle.KPlaceHolderPrimaryTextStyle*/,
+      this.textStyle/*= KStyle.KLargeBodyStyle*/,
+      this.hintStyle/*= KStyle.KPlaceHolderPrimaryTextStyle*/,
       this.isEmpty = false,
       this.suffixIcon = SuffixIcon.empty,
       this.onSuffixIconPressed,
@@ -63,13 +63,13 @@ class DecoratedTextField extends StatefulWidget {
       this.marginTop = 0,
       this.marginRight = 0,
       this.marginLeft = 0,
-      this.height = 80,
+      this.height = 70,
       this.emptyColor = KDarkColors.kPrimaryColor,
       this.corner = RadiusConstants.textFieldRadius,
       this.borderColor = KDarkColors.kPrimaryColor,
       this.errorText,
       this.isRequired = false,
-      this.validator});
+      this.validator,this.onTap});
 
   @override
   _DecoratedTextFieldState createState() => _DecoratedTextFieldState();
@@ -84,80 +84,84 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        TextFormField(
-          validator: widget.validator,
-          enableInteractiveSelection: false,
-          // key: Key(widget.validationKey),
-          controller: widget.controller,
-          maxLines: widget.isPassword ? 1 : widget.maxLines,
-          readOnly: widget.isReadOnly,
-          autofocus: widget.isAutoFocus,
-          maxLength: widget.maxLength,
-          // initialValue: widget.value,
-          style: widget.textStyle,
-          onChanged: widget.textChanged,
-          obscureText:
-              widget.isPassword ? !widget.isObscure : widget.isObscure,
-          keyboardType: widget.keyboard,
-          decoration: InputDecoration(
-            counterText: "",
-            errorText: widget.errorText,
-            //errorStyle: TextStyle(backgroundColor: Colors.transparent),
-            errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: widget.borderColor),
-              borderRadius: BorderRadius.circular(widget.corner),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: widget.borderColor),
-              borderRadius: BorderRadius.circular(widget.corner),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                width: 2,
-                  color: widget.isEmpty
-                      ? widget.emptyColor
-                      : widget.borderColor),
-              borderRadius: BorderRadius.circular(widget.corner),
-            ),
-            enabled: widget.enable,
-            border: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: widget.isEmpty
-                      ? widget.emptyColor
-                      : widget.borderColor),
-              borderRadius: BorderRadius.circular(widget.corner),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: widget.isEmpty
-                      ? widget.emptyColor
-                      : KDarkColors.kPrimaryColor),
-              borderRadius: BorderRadius.circular(widget.corner),
-            ),
-            // contentPadding: const EdgeInsets.symmetric(
-            //     vertical: 16,
-            //     horizontal: 16),
-            // fillColor: KColors.KSecondaryColor,
-            // filled: true,
-            hintText: widget.hint,
-            // hintStyle: KStyle.KPlaceHolderTextStyle,
-            suffixIcon: getSuffixIcon(
-                widget.suffixIcon, widget.onSuffixIconPressed ?? (){}),
-            prefixIcon: SizedBox(
-              child: getIcon(widget.prefixIcon),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Stack(
+        children: [
+          TextFormField(
+            onTap: widget.onTap,
+            validator: widget.validator,
+            enableInteractiveSelection: false,
+            // key: Key(widget.validationKey),
+            controller: widget.controller,
+            maxLines: widget.isPassword ? 1 : widget.maxLines,
+            readOnly: widget.isReadOnly,
+            autofocus: widget.isAutoFocus,
+            maxLength: widget.maxLength,
+            // initialValue: widget.value,
+            style: widget.textStyle,
+            onChanged: widget.textChanged,
+            obscureText:
+                widget.isPassword ? !widget.isObscure : widget.isObscure,
+            keyboardType: widget.keyboard,
+            decoration: InputDecoration(
+              counterText: "",
+              errorText: widget.errorText,
+              //errorStyle: TextStyle(backgroundColor: Colors.transparent),
+              errorBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: widget.borderColor),
+                borderRadius: BorderRadius.circular(widget.corner),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: widget.borderColor),
+                borderRadius: BorderRadius.circular(widget.corner),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    width: 2,
+                    color: widget.isEmpty
+                        ? widget.emptyColor
+                        : widget.borderColor),
+                borderRadius: BorderRadius.circular(widget.corner),
+              ),
+              enabled: widget.enable,
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: widget.isEmpty
+                        ? widget.emptyColor
+                        : widget.borderColor),
+                borderRadius: BorderRadius.circular(widget.corner),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                    color: widget.isEmpty
+                        ? widget.emptyColor
+                        : KDarkColors.kPrimaryColor),
+                borderRadius: BorderRadius.circular(widget.corner),
+              ),
+              // contentPadding: const EdgeInsets.symmetric(
+              //     vertical: 16,
+              //     horizontal: 16),
+              // fillColor: KColors.KSecondaryColor,
+              // filled: true,
+              hintText: widget.hint,
+              // hintStyle: KStyle.KPlaceHolderTextStyle,
+              suffixIcon: getSuffixIcon(
+                  widget.suffixIcon, widget.onSuffixIconPressed ?? () {}),
+              prefixIcon: SizedBox(
+                child: getIcon(widget.prefixIcon),
+              ),
             ),
           ),
-        ),
-        Visibility(
-          visible: widget.isRequired,
+          Visibility(
+            visible: widget.isRequired,
             child: const Text(
               "*",
               style: TextStyle(color: Colors.red, fontSize: 16),
             ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 
@@ -245,7 +249,8 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
         minWidth: 8,
         child: IconButton(
           onPressed: _toggle,
-          icon:  Icon(widget.isObscure ? Icons.visibility : Icons.visibility_off),
+          icon:
+              Icon(widget.isObscure ? Icons.visibility : Icons.visibility_off),
         ),
       );
     } else if (suffixIcon == SuffixIcon.birthday) {
@@ -266,7 +271,10 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
       );
     }
 
-    return ButtonTheme(child: const SizedBox(width: 0,));
+    return ButtonTheme(
+        child: const SizedBox(
+      width: 0,
+    ));
   }
 }
 
