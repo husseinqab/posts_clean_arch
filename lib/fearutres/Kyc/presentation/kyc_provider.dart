@@ -12,7 +12,8 @@ class KycProvider extends ChangeNotifier {
   };
 
 
-  final registerFormKey = GlobalKey<FormState>();
+  var registerFormKey = GlobalKey<FormState>();
+
   var firstName = '';
 
   String? Function(String?)? firstNameValidator = globalValidator;
@@ -47,7 +48,7 @@ class KycProvider extends ChangeNotifier {
 
 
   bool isValidRegister(){
-    return firstName.isNotEmpty && lastName.isNotEmpty && email.isNotEmpty && phone.isNotEmpty;
+    return registerFormKey.currentState!.validate();
   }
 
   validateRegister(BuildContext context){
@@ -56,9 +57,19 @@ class KycProvider extends ChangeNotifier {
         const SnackBar(content: Text('Registered on striga')),
       );
     }
+    notifyListeners();
   }
   final emailVFormKey = GlobalKey<FormState>();
-  String? Function(String?)? emailVCodeValidator = globalValidator;
+  String? Function(String?)? emailVCodeValidator = (value) {
+    if (value == null || value.isEmpty) {
+      return 'Required';
+    }
+    if (value.length != 6){
+      return 'OTP must be 6 digits';
+    }
+
+    return null;
+  };
 
   validateEmailVCode(BuildContext context){
     if (emailVFormKey.currentState!.validate()) {
@@ -66,10 +77,11 @@ class KycProvider extends ChangeNotifier {
         const SnackBar(content: Text('Email Verified')),
       );
     }
+    notifyListeners();
   }
   var emailVCode = '';
   bool isValidEmailCode(){
-    return emailVCode.isNotEmpty;
+    return emailVFormKey.currentState!.validate();
   }
 
   setEmailVCode(value){
@@ -77,7 +89,16 @@ class KycProvider extends ChangeNotifier {
     notifyListeners();
   }
   final phoneVFormKey = GlobalKey<FormState>();
-  String? Function(String?)? phoneVCodeValidator = globalValidator;
+  String? Function(String?)? phoneVCodeValidator = (value) {
+    if (value == null || value.isEmpty) {
+      return 'Required';
+    }
+    if (value.length != 6){
+      return 'OTP must be 6 digits';
+    }
+
+    return null;
+  };
 
   validatePhoneVCode(BuildContext context){
     if (phoneVFormKey.currentState!.validate()) {
@@ -85,12 +106,13 @@ class KycProvider extends ChangeNotifier {
         const SnackBar(content: Text('Phone Verified')),
       );
     }
+    notifyListeners();
   }
 
 
   var phoneVCode = '';
   bool isValidPhoneCode(){
-    return phoneVCode.isNotEmpty;
+    return phoneVFormKey.currentState!.validate();
   }
 
   setPhoneVCode(value){
@@ -250,7 +272,7 @@ class KycProvider extends ChangeNotifier {
 
   }
 
-  final updateDataFormKey = GlobalKey<FormState>();
+
 
   String? Function(String?)? addressLine1NameValidator = globalValidator;
   String? Function(String?)? addressLine2NameValidator = globalValidator;
@@ -259,6 +281,7 @@ class KycProvider extends ChangeNotifier {
   String? Function(String?)? postalCodeValidator = globalValidator;
   String? Function(String?)? provinceCodeValidator = globalValidator;
 
+  final updateDataFormKey = GlobalKey<FormState>();
 
   validateUpdateData(BuildContext context){
     if (updateDataFormKey.currentState!.validate()) {
@@ -266,8 +289,24 @@ class KycProvider extends ChangeNotifier {
         const SnackBar(content: Text('Start KYC')),
       );
     }
+    notifyListeners();
   }
 
 
+  var birthdayController = TextEditingController(text: '');
+
+  var _birthday= '';
+
+  get birthday => _birthday.isEmpty;
+
+  set birthday(value) {
+    _birthday = value;
+    birthdayController.text = value;
+    notifyListeners();
+  }
+
+  String? Function(String?)? birthdayValidator = globalValidator;
+
 
 }
+

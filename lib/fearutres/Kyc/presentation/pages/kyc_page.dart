@@ -1,6 +1,7 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/decorated_text_field.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/rounded_button.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/kyc_provider.dart';
@@ -8,9 +9,14 @@ import 'package:provider/provider.dart';
 
 import '../../../../core/widgets_helpers/custom_dropdown_widget.dart';
 
-class KycPage extends StatelessWidget {
+class KycPage extends StatefulWidget {
   const KycPage({super.key});
 
+  @override
+  State<KycPage> createState() => _KycPageState();
+}
+
+class _KycPageState extends State<KycPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -27,10 +33,10 @@ class KycBody extends StatefulWidget {
 
 class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
   static List<Widget> tabBarViews = <Widget>[
-    const UpdateUserPage(),
     const RegisterInStrigaPage(),
     const VerifyMailPage(),
     const VerifyPhonePage(),
+    const UpdateUserPage(),
   ];
 
   late TabController _tabController;
@@ -67,30 +73,23 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
         child: RoundedButton(
           title: 'Next',
           onPressed: () {
-            if (_tabController.index < tabBarViews.length - 1) {
+            if (_tabController.index < tabBarViews.length) {
               if (_tabController.index == 0) {
-                context.read<KycProvider>().validateUpdateData(context);
-                //context.read<KycProvider>().validateRegister(context);
+                context.read<KycProvider>().validateRegister(context);
                 if (context.read<KycProvider>().isValidRegister()) {
                   _tabController.animateTo(_tabController.index + 1);
                 }
-              }
-
-              if (_tabController.index == 1) {
+              } else if (_tabController.index == 1) {
                 context.read<KycProvider>().validateEmailVCode(context);
                 if (context.read<KycProvider>().isValidEmailCode()) {
                   _tabController.animateTo(_tabController.index + 1);
                 }
-              }
-
-              if (_tabController.index == 2) {
+              } else if (_tabController.index == 2) {
                 context.read<KycProvider>().validatePhoneVCode(context);
                 if (context.read<KycProvider>().isValidPhoneCode()) {
                   _tabController.animateTo(_tabController.index + 1);
                 }
-              }
-
-              if (_tabController.index == 3) {
+              } else if (_tabController.index == 3) {
                 context.read<KycProvider>().validateUpdateData(context);
               }
             }
@@ -145,6 +144,7 @@ class RegisterInStrigaPage extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               DecoratedTextField(
+                keyboard: TextInputType.phone,
                 validator: provider.phoneValidator,
                 height: 20,
                 corner: 10,
@@ -178,7 +178,9 @@ class VerifyMailPage extends StatelessWidget {
                   height: 10,
                 ),
                 DecoratedTextField(
+                  keyboard: TextInputType.number,
                   validator: provider.emailVCodeValidator,
+                  maxLength: 6,
                   hint: 'Verification Code',
                   corner: 10,
                   height: 20,
@@ -211,7 +213,10 @@ class VerifyPhonePage extends StatelessWidget {
                   height: 10,
                 ),
                 DecoratedTextField(
+                  keyboard: TextInputType.number,
+                  validator: provider.phoneVCodeValidator,
                   corner: 10,
+                  maxLength: 6,
                   hint: 'Verification Code',
                   height: 20,
                   textChanged: (value) {
@@ -225,14 +230,8 @@ class VerifyPhonePage extends StatelessWidget {
   }
 }
 
-class UpdateUserPage extends StatefulWidget {
+class UpdateUserPage extends StatelessWidget {
   const UpdateUserPage({super.key});
-
-  @override
-  State<UpdateUserPage> createState() => _UpdateUserPageState();
-}
-
-class _UpdateUserPageState extends State<UpdateUserPage> {
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +244,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
           child: Column(
             children: [
               DecoratedTextField(
-                onTap: (){
+                onTap: () {
                   showCountryPicker(
                     context: context,
                     showPhoneCode: false,
@@ -264,7 +263,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               ),
               const SizedBox(height: 20),
               DecoratedTextField(
-                onTap: (){
+                onTap: () {
                   showCountryPicker(
                     context: context,
                     showPhoneCode: false,
@@ -303,7 +302,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               ),
               const SizedBox(height: 20),
               DecoratedTextField(
-                onTap: (){
+                onTap: () {
                   showCountryPicker(
                     context: context,
                     showPhoneCode: false,
@@ -344,7 +343,6 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                 ],
                 onChanged: (value) {
                   provider.expectedOutgoingTxVolumeYearly(value);
-
                 },
               ),
               const SizedBox(height: 20),
@@ -353,7 +351,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                 corner: 10,
                 hint: 'Address Line 1',
                 height: 20,
-                textChanged: (value){
+                textChanged: (value) {
                   provider.addressLine1 = value;
                 },
               ),
@@ -363,7 +361,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                 corner: 10,
                 hint: 'Address Line 2',
                 height: 20,
-                textChanged: (value){
+                textChanged: (value) {
                   provider.addressLine2 = value;
                 },
               ),
@@ -377,7 +375,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                   provider.city = value;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               DecoratedTextField(
                 validator: provider.postalCodeValidator,
                 corner: 10,
@@ -387,7 +385,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                   provider.postalCode = value;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               DecoratedTextField(
                 validator: provider.provinceCodeValidator,
                 corner: 10,
@@ -399,7 +397,7 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
               ),
               SizedBox(height: 20),
               DecoratedTextField(
-                onTap: (){
+                onTap: () {
                   showCountryPicker(
                     context: context,
                     showPhoneCode: false,
@@ -417,6 +415,25 @@ class _UpdateUserPageState extends State<UpdateUserPage> {
                 isReadOnly: true,
               ),
               SizedBox(height: 20),
+              DecoratedTextField(
+                onTap: () async {
+                  DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day),
+                    firstDate: DateTime(1920),
+                    lastDate:  DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day)
+                  );
+                  if (picked != null){
+                    provider.birthday = DateFormat('yyyy-MM-dd').format(picked!);
+                  }
+                },
+                validator: provider.birthdayValidator,
+                corner: 10,
+                hint: 'Date of Birth',
+                height: 20,
+                controller: provider.birthdayController,
+                isReadOnly: true,
+              ),
             ],
           ),
         );
