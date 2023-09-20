@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart';
 import 'package:posts_clean_arch/core/errors/exception.dart';
 
@@ -11,7 +13,7 @@ class RestResponse {
 abstract class RestHelper {
   Future<dynamic> get(String url);
 
-  Future<dynamic> post(String url, Map<dynamic, String> body);
+  Future<dynamic> post(String url, Map<String, dynamic> body);
 
   final headers = {'Content-Type': 'application/json'};
 }
@@ -36,21 +38,25 @@ class HttpHelper extends RestHelper {
   }
 
   @override
-  Future post(String url, Map<dynamic, String> body) async {
+  Future post(String url, Map<String, dynamic> body) async {
     try {
       Response httpResponse =
-          await client.post(Uri.parse(url), body: body, headers: headers);
+          await client.post(Uri.parse(url), body: jsonEncode(body), headers: headers);
 
       //return httpResponse.body;
       return _handleStatusCode(httpResponse);
-    } catch (_) {
+    } catch (e) {
+      print(e);
       throw UnExpectedException();
     }
   }
 
   dynamic _handleStatusCode(Response httpResponse) {
     if (httpResponse.statusCode == 200) {
-      return httpResponse.body;
+      var response = apiResponseFromJson(httpResponse.body);
+      if (response.statusCode == 200){
+        return response.data;
+      }
     } else if (httpResponse.statusCode == 401) {
       throw UnAuthorizedException();
     } else if (httpResponse.statusCode == 404) {
@@ -62,5 +68,27 @@ class HttpHelper extends RestHelper {
     }
   }
 }
+
+ApiResponse apiResponseFromJson(String str) => ApiResponse.fromJson(json.decode(str));
+
+class ApiResponse<T> {
+  final int statusCode;
+  final String message;
+  final T data;
+
+  ApiResponse({
+    required this.statusCode,
+    required this.message,
+    required this.data,
+  });
+
+  factory ApiResponse.fromJson(Map<String, dynamic> json) => ApiResponse(
+    statusCode: json["statusCode"],
+    message: json["message"],
+    data: json["data"],
+  );
+
+}
+
 
 

@@ -29,7 +29,7 @@ class KycProvider extends ChangeNotifier {
   get countryCode => _countryCode;
 
   set countryCode(value) {
-    _countryCode = value;
+    _countryCode = "+$value";
     countryCodeController.text = "+ $value";
     notifyListeners();
   }
@@ -67,9 +67,9 @@ class KycProvider extends ChangeNotifier {
 
   validateRegister(BuildContext context){
     if (registerFormKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      /*ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Registered on striga')),
-      );
+      );*/
     }
     notifyListeners();
   }

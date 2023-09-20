@@ -21,7 +21,7 @@ class DioHelper extends RestHelper {
   }
 
   @override
-  Future post(String url, Map<dynamic, String> body) {
+  Future post(String url, Map<String, dynamic> body) {
     // TODO: implement post
     throw UnimplementedError();
   }

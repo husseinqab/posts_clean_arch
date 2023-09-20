@@ -6,6 +6,10 @@ import 'package:posts_clean_arch/core/dioHelper.dart';
 import 'package:posts_clean_arch/core/generic_api_calls.dart';
 import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/core/network/network_info.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/data/datasources/register_striga_remote_datasource.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/data/repositories/register_striga_repository_impl.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/repositories/register_striga_repository.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_bloc.dart';
 import 'package:posts_clean_arch/fearutres/airlines/data/datasources/airline_remote_datasource.dart';
 import 'package:posts_clean_arch/fearutres/airlines/data/repositories/AirlineRepositoryImpl.dart';
 import 'package:posts_clean_arch/fearutres/airlines/domain/repositories/airline_repository.dart';
@@ -28,6 +32,8 @@ import 'package:posts_clean_arch/fearutres/users/data/repositories/user_reposito
 import 'package:posts_clean_arch/fearutres/users/domain/repositories/user_repository.dart';
 import 'package:posts_clean_arch/fearutres/users/domain/usecases/user_usecase.dart';
 import 'package:posts_clean_arch/fearutres/users/presentation/bloc/user_bloc.dart';
+
+import 'fearutres/Kyc/domain/usecases/register_striga_usecase.dart';
 
 final sl = GetIt.instance;
 
@@ -72,6 +78,15 @@ void init() {
   sl.registerLazySingleton<PassengerRepository>(() => PassengerRepositoryImpl(callApi: sl(),remoteDataSource: sl()));
   //data
   sl.registerLazySingleton<PassengersRemoteDataSource>(() => PassengersRemoteDataSourceImpl(client: sl()));
+  ///feature: RegisterStriga
+  sl.registerFactory(() => RegisterInStrigaBloc(sl()));
+  //usecase
+  sl.registerLazySingleton(() => RegisterInStriga(registerStrigaRepository: sl()));
+  //repo
+  sl.registerLazySingleton<RegisterStrigaRepository>(() => RegisterStrigaRepositoryImpl(callApi: sl(),remoteDataSource: sl()));
+  //data
+  sl.registerLazySingleton<RegisterStrigaDataSource>(() => RegisterStrigaDataSourceImpl(client: sl()));
+
 
   //core
   sl.registerLazySingleton<RestHelper>(() => HttpHelper(client: sl()));

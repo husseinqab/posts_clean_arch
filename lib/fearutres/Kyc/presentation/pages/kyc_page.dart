@@ -1,14 +1,20 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:posts_clean_arch/core/constants/kyc_data_constants.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/decorated_text_field.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/rounded_button.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_bloc.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_event.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_state.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/kyc_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/widgets_helpers/custom_dropdown_widget.dart';
+import '../../../../injection_container.dart ';
 
 class KycPage extends StatefulWidget {
   const KycPage({super.key});
@@ -20,8 +26,11 @@ class KycPage extends StatefulWidget {
 class _KycPageState extends State<KycPage> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (_) => KycProvider(), child: const KycBody());
+    return BlocProvider<RegisterInStrigaBloc>(
+      create: (context) => sl<RegisterInStrigaBloc>(),
+      child: ChangeNotifierProvider(
+          create: (_) => KycProvider(), child: const KycBody()),
+    );
   }
 }
 
@@ -78,7 +87,18 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
               if (_tabController.index == 0) {
                 context.read<KycProvider>().validateRegister(context);
                 if (context.read<KycProvider>().isValidRegister()) {
-                  _tabController.animateTo(_tabController.index + 1);
+                  // Trigger EVENT
+                  BlocProvider.of<RegisterInStrigaBloc>(context)
+                      .add(RegisterInStrigaEvent(
+                          request: RegisterStrigaRequest(
+                              firstName: context.read<KycProvider>().firstName,
+                              lastName: context.read<KycProvider>().lastName,
+                              email: context.read<KycProvider>().email,
+                              mobile: Mobile(
+                                countryCode:
+                                    context.read<KycProvider>().countryCode,
+                                number: context.read<KycProvider>().phone,
+                              ))));
                 }
               } else if (_tabController.index == 1) {
                 context.read<KycProvider>().validateEmailVCode(context);
@@ -182,6 +202,29 @@ class RegisterInStrigaPage extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 20),
+              BlocListener<RegisterInStrigaBloc,
+                  RegisterStrigaState>(listener: (context, state) {
+                if (state is RegisterStrigaLoaded) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                            'Registered on striga with ${state.registerStrigaResponse.userId}')),
+                  );
+                }
+              }, child:
+              BlocBuilder<RegisterInStrigaBloc, RegisterStrigaState>(
+                builder: (context, state) {
+                  if (state is RegisterStrigaLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is RegisterStrigaFailed) {
+                    return Center(child: Text(state.message));
+                  }
+                  return const SizedBox();
+                },
+              ))
             ],
           ),
         );
@@ -272,25 +315,25 @@ class UpdateUserPage extends StatelessWidget {
           key: provider.updateDataFormKey,
           child: Column(
             children: [
-             /* DecoratedTextField(
-                onTap: () {
-                  showCountryPicker(
-                    context: context,
-                    showPhoneCode: false,
-                    // optional. Shows phone code before the country name.
-                    onSelect: (Country country) {
-                      provider.documentIssuingCountry = country;
-                    },
-                  );
-                },
-                validator: provider.documentIssueValidator,
-                corner: 10,
-                hint: 'Document Issuing Country',
-                height: 20,
-                controller: provider.documentIssueController,
-                isReadOnly: true,
-              ),
-              const SizedBox(height: 20),*/
+              /* DecoratedTextField(
+              onTap: () {
+                showCountryPicker(
+                  context: context,
+                  showPhoneCode: false,
+                  // optional. Shows phone code before the country name.
+                  onSelect: (Country country) {
+                    provider.documentIssuingCountry = country;
+                  },
+                );
+              },
+              validator: provider.documentIssueValidator,
+              corner: 10,
+              hint: 'Document Issuing Country',
+              height: 20,
+              controller: provider.documentIssueController,
+              isReadOnly: true,
+            ),
+            const SizedBox(height: 20),*/
               DecoratedTextField(
                 suffixIcon: SuffixIcon.address,
                 validator: provider.addressLine1NameValidator,
@@ -365,7 +408,7 @@ class UpdateUserPage extends StatelessWidget {
                 isReadOnly: true,
               ),
               const SizedBox(height: 20),
-              const Divider(color: Colors.black,thickness: 1),
+              const Divider(color: Colors.black, thickness: 1),
               const SizedBox(height: 10),
               DecoratedTextField(
                 onTap: () {
