@@ -281,6 +281,28 @@ class UpdateUserPage extends StatelessWidget {
                 isReadOnly: true,
               ),
               const SizedBox(height: 20),
+              DecoratedTextField(
+                onTap: () async {
+                  DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime(DateTime.now().year - 18,
+                          DateTime.now().month, DateTime.now().day),
+                      firstDate: DateTime(1920),
+                      lastDate: DateTime(DateTime.now().year - 18,
+                          DateTime.now().month, DateTime.now().day));
+                  if (picked != null) {
+                    provider.birthday =
+                        DateFormat('yyyy-MM-dd').format(picked!);
+                  }
+                },
+                validator: provider.birthdayValidator,
+                corner: 10,
+                hint: 'Date of Birth',
+                height: 20,
+                controller: provider.birthdayController,
+                isReadOnly: true,
+              ),
+              const SizedBox(height: 20),
               CustomDropDownWidget(
                 validator: provider.occupationValidator,
                 dropdownValue: provider.occupation,
@@ -314,7 +336,7 @@ class UpdateUserPage extends StatelessWidget {
                 },
                 validator: provider.placeOfBirthValidator,
                 corner: 10,
-                hint: 'Nationality',
+                hint: 'Place of Birth',
                 height: 20,
                 controller: provider.placeOfBirthController,
                 isReadOnly: true,
@@ -414,26 +436,64 @@ class UpdateUserPage extends StatelessWidget {
                 controller: provider.countryController,
                 isReadOnly: true,
               ),
-              SizedBox(height: 20),
-              DecoratedTextField(
-                onTap: () async {
-                  DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day),
-                    firstDate: DateTime(1920),
-                    lastDate:  DateTime(DateTime.now().year - 18, DateTime.now().month, DateTime.now().day)
-                  );
-                  if (picked != null){
-                    provider.birthday = DateFormat('yyyy-MM-dd').format(picked!);
-                  }
-                },
-                validator: provider.birthdayValidator,
-                corner: 10,
-                hint: 'Date of Birth',
-                height: 20,
-                controller: provider.birthdayController,
-                isReadOnly: true,
+              const SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("PEP Declaration"),
+                  ),
+                  Visibility(
+                      visible: provider.pepRequired,
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          "*",
+                          style: TextStyle(color: Colors.red, fontSize: 18),
+                        ),
+                      )),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Politically Exposed Person (PEP) is somebody who holds a prominent public position",
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        child: Row(
+                          children: [
+                            Checkbox(
+                                value: provider.pepYes,
+                                onChanged: (val) {
+                                  provider.declareYes(val);
+                                }),
+                            const Text("YES")
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      SizedBox(
+                        width: 80,
+                        child: Row(
+                          children: [
+                            Checkbox(
+                                value: provider.pepNo,
+                                onChanged: (val) {
+                                  provider.declareNo(val);
+                                }),
+                            const Text("No")
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+                ],
               ),
+              const SizedBox(height: 20),
             ],
           ),
         );

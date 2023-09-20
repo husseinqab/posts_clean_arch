@@ -283,12 +283,14 @@ class KycProvider extends ChangeNotifier {
 
   final updateDataFormKey = GlobalKey<FormState>();
 
+
   validateUpdateData(BuildContext context){
     if (updateDataFormKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Start KYC')),
       );
     }
+
     notifyListeners();
   }
 
@@ -307,6 +309,46 @@ class KycProvider extends ChangeNotifier {
 
   String? Function(String?)? birthdayValidator = globalValidator;
 
+
+  bool pepYes = false;
+  bool pepNo = false;
+
+  bool pepSelected = false;
+  bool pepRequired = true;
+
+  declareYes(bool? yes){
+    if (yes!){
+      pepYes = true;
+      pepNo = false;
+    }
+    if (pepYes){
+      pepSelected = true;
+      pepRequired = false;
+    } else if (pepNo) {
+      pepSelected = false;
+      pepRequired = false;
+    } else {
+      pepRequired = true;
+    }
+    notifyListeners();
+  }
+
+  declareNo(bool? no){
+    if (no!){
+      pepYes = false;
+      pepNo = true;
+    }
+    if (pepYes){
+      pepSelected = true;
+      pepRequired = false;
+    } else if (pepNo) {
+      pepSelected = false;
+      pepRequired = false;
+    } else {
+      pepRequired = true;
+    }
+    notifyListeners();
+  }
 
 }
 
