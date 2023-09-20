@@ -146,12 +146,15 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
               // fillColor: KColors.KSecondaryColor,
               // filled: true,
               hintText: widget.hint,
-              // hintStyle: KStyle.KPlaceHolderTextStyle,
+              hintStyle: const TextStyle(
+                color: Colors.grey,
+                fontSize: 14
+              ),
               suffixIcon: getSuffixIcon(
                   widget.suffixIcon, widget.onSuffixIconPressed ?? () {}),
-              prefixIcon: SizedBox(
+              /*prefixIcon: SizedBox(
                 child: getIcon(widget.prefixIcon),
-              ),
+              ),*/
             ),
           ),
           Visibility(
@@ -270,6 +273,30 @@ class _DecoratedTextFieldState extends State<DecoratedTextField> {
           icon: const Icon(Icons.camera_alt),
         ),
       );
+    } else if (suffixIcon == SuffixIcon.place) {
+      return ButtonTheme(
+        minWidth: 8,
+        child: IconButton(
+          onPressed: onSuffixIconPressed,
+          icon: const Icon(Icons.place),
+        ),
+      );
+    } else if (suffixIcon == SuffixIcon.address) {
+      return ButtonTheme(
+        minWidth: 8,
+        child: IconButton(
+          onPressed: onSuffixIconPressed,
+          icon: const Icon(Icons.home),
+        ),
+      );
+    } else if (suffixIcon == SuffixIcon.city) {
+      return ButtonTheme(
+        minWidth: 8,
+        child: IconButton(
+          onPressed: onSuffixIconPressed,
+          icon: const Icon(Icons.location_city),
+        ),
+      );
     }
 
     return ButtonTheme(
@@ -295,4 +322,96 @@ enum PrefixIcon {
 
 enum PrefixType { None, Icon, Text }
 
-enum SuffixIcon { password, birthday, camera, empty }
+enum SuffixIcon { password, birthday, camera, empty,place,address,city }
+
+class PhoneCodeInput extends StatefulWidget {
+  final String hint;
+  final TextInputType keyboard;
+  final String value;
+  final Function(String text)? textChanged;
+  final bool isEmpty;
+  TextStyle? textStyle;
+  final isReadOnly;
+  final String? validationKey;
+  TextEditingController? controller;
+  Color borderColor;
+  Color emptyColor;
+  double corner;
+  double height;
+  String? Function(String?)? validator;
+  void Function()? onTap;
+  PhoneCodeInput(
+      {super.key,
+        this.hint = "",
+        this.keyboard = TextInputType.text,
+        this.value = "",
+        this.textChanged,
+        this.textStyle/*= KStyle.KLargeBodyStyle*/,
+        this.isEmpty = false,
+        this.isReadOnly = false,
+        this.controller,
+        this.validationKey,
+        this.height = 70,
+        this.emptyColor = KDarkColors.kPrimaryColor,
+        this.corner = RadiusConstants.textFieldRadius,
+        this.borderColor = KDarkColors.kPrimaryColor,
+        this.validator,this.onTap});
+
+  @override
+  State<PhoneCodeInput> createState() => _PhoneCodeInputState();
+}
+
+class _PhoneCodeInputState extends State<PhoneCodeInput> {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: TextFormField(
+        onTap: widget.onTap,
+        validator: widget.validator,
+        enableInteractiveSelection: false,
+        // key: Key(widget.validationKey),
+        controller: widget.controller,
+        readOnly: widget.isReadOnly,
+        // initialValue: widget.value,
+        style: widget.textStyle,
+        onChanged: widget.textChanged,
+        keyboardType: widget.keyboard,
+        decoration: InputDecoration(
+          //errorStyle: TextStyle(backgroundColor: Colors.transparent),
+          errorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: widget.borderColor),
+            borderRadius: BorderRadius.circular(widget.corner),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: widget.borderColor),
+            borderRadius: BorderRadius.circular(widget.corner),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                width: 2,
+                color: widget.isEmpty
+                    ? widget.emptyColor
+                    : widget.borderColor),
+            borderRadius: BorderRadius.circular(widget.corner),
+          ),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: widget.isEmpty
+                    ? widget.emptyColor
+                    : widget.borderColor),
+            borderRadius: BorderRadius.circular(widget.corner),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: widget.isEmpty
+                    ? widget.emptyColor
+                    : KDarkColors.kPrimaryColor),
+            borderRadius: BorderRadius.circular(widget.corner),
+          ),
+          hintText: widget.hint,
+          ),
+        ),
+      );
+  }
+}

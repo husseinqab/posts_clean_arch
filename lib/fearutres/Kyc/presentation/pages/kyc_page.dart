@@ -2,6 +2,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:posts_clean_arch/core/constants/kyc_data_constants.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/decorated_text_field.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/rounded_button.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/kyc_provider.dart';
@@ -143,15 +144,43 @@ class RegisterInStrigaPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 10),
-              DecoratedTextField(
-                keyboard: TextInputType.phone,
-                validator: provider.phoneValidator,
-                height: 20,
-                corner: 10,
-                hint: 'Phone Number',
-                textChanged: (value) {
-                  provider.setPhone(value);
-                },
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: PhoneCodeInput(
+                      onTap: () {
+                        showCountryPicker(
+                          exclude: KycData.unSupportedCountries,
+                          context: context,
+                          showPhoneCode: true,
+                          // optional. Shows phone code before the country name.
+                          onSelect: (Country country) {
+                            provider.countryCode = country.phoneCode;
+                          },
+                        );
+                      },
+                      validator: provider.countryCodeValidator,
+                      corner: 10,
+                      hint: '+00',
+                      height: 20,
+                      controller: provider.countryCodeController,
+                      isReadOnly: true,
+                    ),
+                  ),
+                  Expanded(
+                    child: DecoratedTextField(
+                      keyboard: TextInputType.phone,
+                      validator: provider.phoneValidator,
+                      height: 20,
+                      corner: 10,
+                      hint: 'Phone Number',
+                      textChanged: (value) {
+                        provider.setPhone(value);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -243,7 +272,7 @@ class UpdateUserPage extends StatelessWidget {
           key: provider.updateDataFormKey,
           child: Column(
             children: [
-              DecoratedTextField(
+             /* DecoratedTextField(
                 onTap: () {
                   showCountryPicker(
                     context: context,
@@ -261,114 +290,9 @@ class UpdateUserPage extends StatelessWidget {
                 controller: provider.documentIssueController,
                 isReadOnly: true,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 20),*/
               DecoratedTextField(
-                onTap: () {
-                  showCountryPicker(
-                    context: context,
-                    showPhoneCode: false,
-                    // optional. Shows phone code before the country name.
-                    onSelect: (Country country) {
-                      provider.nationality = country;
-                    },
-                  );
-                },
-                validator: provider.nationalityValidator,
-                corner: 10,
-                hint: 'Nationality',
-                height: 20,
-                controller: provider.nationalityController,
-                isReadOnly: true,
-              ),
-              const SizedBox(height: 20),
-              DecoratedTextField(
-                onTap: () async {
-                  DateTime? picked = await showDatePicker(
-                      context: context,
-                      initialDate: DateTime(DateTime.now().year - 18,
-                          DateTime.now().month, DateTime.now().day),
-                      firstDate: DateTime(1920),
-                      lastDate: DateTime(DateTime.now().year - 18,
-                          DateTime.now().month, DateTime.now().day));
-                  if (picked != null) {
-                    provider.birthday =
-                        DateFormat('yyyy-MM-dd').format(picked!);
-                  }
-                },
-                validator: provider.birthdayValidator,
-                corner: 10,
-                hint: 'Date of Birth',
-                height: 20,
-                controller: provider.birthdayController,
-                isReadOnly: true,
-              ),
-              const SizedBox(height: 20),
-              CustomDropDownWidget(
-                validator: provider.occupationValidator,
-                dropdownValue: provider.occupation,
-                hint: 'Occupation',
-                items: const ['Public Sector', 'Audit'],
-                onChanged: (value) {
-                  provider.occupation(value);
-                },
-              ),
-              const SizedBox(height: 20),
-              CustomDropDownWidget(
-                validator: provider.sourceOfFundsValidator,
-                dropdownValue: provider.sourceOfFunds,
-                hint: 'Source Of funds',
-                items: const ['Personal Savings', 'FamilySavings'],
-                onChanged: (value) {
-                  provider.sourceOfFunds(value);
-                },
-              ),
-              const SizedBox(height: 20),
-              DecoratedTextField(
-                onTap: () {
-                  showCountryPicker(
-                    context: context,
-                    showPhoneCode: false,
-                    // optional. Shows phone code before the country name.
-                    onSelect: (Country country) {
-                      provider.placeOfBirth = country;
-                    },
-                  );
-                },
-                validator: provider.placeOfBirthValidator,
-                corner: 10,
-                hint: 'Place of Birth',
-                height: 20,
-                controller: provider.placeOfBirthController,
-                isReadOnly: true,
-              ),
-              SizedBox(height: 20),
-              CustomDropDownWidget(
-                validator: provider.expectedIncomingValidator,
-                dropdownValue: provider.expectedIncomingTxVolumeYearly,
-                hint: provider.expectedIncomingTxVolumeYearly,
-                items: const [
-                  'Between 10000 abd 15000',
-                  'Between 5000 and 10000'
-                ],
-                onChanged: (value) {
-                  provider.expectedIncomingTxVolumeYearly(value);
-                },
-              ),
-              const SizedBox(height: 20),
-              CustomDropDownWidget(
-                validator: provider.expectedOutgoingValidator,
-                dropdownValue: provider.expectedOutgoingTxVolumeYearly,
-                hint: provider.expectedOutgoingTxVolumeYearly,
-                items: const [
-                  'Between 10000 abd 15000',
-                  'Between 5000 and 10000'
-                ],
-                onChanged: (value) {
-                  provider.expectedOutgoingTxVolumeYearly(value);
-                },
-              ),
-              const SizedBox(height: 20),
-              DecoratedTextField(
+                suffixIcon: SuffixIcon.address,
                 validator: provider.addressLine1NameValidator,
                 corner: 10,
                 hint: 'Address Line 1',
@@ -377,9 +301,10 @@ class UpdateUserPage extends StatelessWidget {
                   provider.addressLine1 = value;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               DecoratedTextField(
-                validator: provider.addressLine2NameValidator,
+                suffixIcon: SuffixIcon.address,
+                //validator: provider.addressLine2NameValidator,
                 corner: 10,
                 hint: 'Address Line 2',
                 height: 20,
@@ -387,8 +312,9 @@ class UpdateUserPage extends StatelessWidget {
                   provider.addressLine2 = value;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               DecoratedTextField(
+                suffixIcon: SuffixIcon.city,
                 validator: provider.cityNameValidator,
                 corner: 10,
                 hint: 'City',
@@ -417,10 +343,12 @@ class UpdateUserPage extends StatelessWidget {
                   provider.province = value;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               DecoratedTextField(
+                suffixIcon: SuffixIcon.place,
                 onTap: () {
                   showCountryPicker(
+                    exclude: KycData.unSupportedCountries,
                     context: context,
                     showPhoneCode: false,
                     // optional. Shows phone code before the country name.
@@ -435,6 +363,113 @@ class UpdateUserPage extends StatelessWidget {
                 height: 20,
                 controller: provider.countryController,
                 isReadOnly: true,
+              ),
+              const SizedBox(height: 20),
+              const Divider(color: Colors.black,thickness: 1),
+              const SizedBox(height: 10),
+              DecoratedTextField(
+                onTap: () {
+                  showCountryPicker(
+                    exclude: KycData.unSupportedCountries,
+                    context: context,
+                    showPhoneCode: false,
+                    // optional. Shows phone code before the country name.
+                    onSelect: (Country country) {
+                      provider.nationality = country;
+                    },
+                  );
+                },
+                validator: provider.nationalityValidator,
+                corner: 10,
+                hint: 'Nationality',
+                height: 20,
+                controller: provider.nationalityController,
+                isReadOnly: true,
+                suffixIcon: SuffixIcon.place,
+              ),
+              const SizedBox(height: 20),
+              DecoratedTextField(
+                onTap: () async {
+                  DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: DateTime(DateTime.now().year - 18,
+                          DateTime.now().month, DateTime.now().day),
+                      firstDate: DateTime(1920),
+                      lastDate: DateTime(DateTime.now().year - 18,
+                          DateTime.now().month, DateTime.now().day));
+                  if (picked != null) {
+                    provider.birthday =
+                        DateFormat('yyyy-MM-dd').format(picked!);
+                  }
+                },
+                validator: provider.birthdayValidator,
+                corner: 10,
+                hint: 'Date of Birth',
+                height: 20,
+                controller: provider.birthdayController,
+                isReadOnly: true,
+                suffixIcon: SuffixIcon.birthday,
+              ),
+              const SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.occupationValidator,
+                dropdownValue: provider.occupation,
+                hint: 'Occupation',
+                items: KycData.occupations,
+                onChanged: (value) {
+                  provider.occupation(value);
+                },
+              ),
+              const SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.sourceOfFundsValidator,
+                dropdownValue: provider.sourceOfFunds,
+                hint: 'Source Of funds',
+                items: KycData.sourceOfFunds,
+                onChanged: (value) {
+                  provider.sourceOfFunds(value);
+                },
+              ),
+              const SizedBox(height: 20),
+              DecoratedTextField(
+                onTap: () {
+                  showCountryPicker(
+                    exclude: KycData.unSupportedCountries,
+                    context: context,
+                    showPhoneCode: false,
+                    // optional. Shows phone code before the country name.
+                    onSelect: (Country country) {
+                      provider.placeOfBirth = country;
+                    },
+                  );
+                },
+                validator: provider.placeOfBirthValidator,
+                corner: 10,
+                hint: 'Place of Birth',
+                height: 20,
+                controller: provider.placeOfBirthController,
+                isReadOnly: true,
+                suffixIcon: SuffixIcon.place,
+              ),
+              const SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.expectedIncomingValidator,
+                dropdownValue: provider.expectedIncomingTxVolumeYearly,
+                hint: provider.expectedIncomingTxVolumeYearly,
+                items: KycData.expectedVolumeItems,
+                onChanged: (value) {
+                  provider.expectedIncomingTxVolumeYearly(value);
+                },
+              ),
+              const SizedBox(height: 20),
+              CustomDropDownWidget(
+                validator: provider.expectedOutgoingValidator,
+                dropdownValue: provider.expectedOutgoingTxVolumeYearly,
+                hint: provider.expectedOutgoingTxVolumeYearly,
+                items: KycData.expectedVolumeItems,
+                onChanged: (value) {
+                  provider.expectedOutgoingTxVolumeYearly(value);
+                },
               ),
               const SizedBox(height: 20),
               Column(

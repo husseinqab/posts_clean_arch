@@ -23,6 +23,20 @@ class KycProvider extends ChangeNotifier {
 
   var email = '';
   String? Function(String?)? emailValidator = globalValidator;
+
+  var _countryCode = '';
+
+  get countryCode => _countryCode;
+
+  set countryCode(value) {
+    _countryCode = value;
+    countryCodeController.text = "+ $value";
+    notifyListeners();
+  }
+  String? Function(String?)? countryCodeValidator = globalValidator;
+
+  var countryCodeController = TextEditingController(text: '');
+
   var phone = '';
   String? Function(String?)? phoneValidator = globalValidator;
 

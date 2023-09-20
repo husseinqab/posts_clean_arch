@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class CustomDropDownWidget extends StatelessWidget {
+class CustomDropDownWidget<T> extends StatelessWidget {
   final String dropdownValue;
   final String hint;
-  final List<String> items;
+  final List<DropDownItem> items;
   final void Function(String?)? onChanged;
   final String? Function(String?)? validator;
 
@@ -25,18 +25,18 @@ class CustomDropDownWidget extends StatelessWidget {
           elevation: 16,
           isExpanded: true,
           selectedItemBuilder: (context) {
-            return items.map((String location) {
+            return items.map((DropDownItem item) {
               return DefaultTextStyle(
                   style: const TextStyle(color: Colors.black),
-                  child: Center(child: Text(location)));
+                  child: Center(child: Text(item.name)));
             }).toList();
           },
           //style: KStyle.KPlaceHolderTextStyle,
           onChanged: onChanged,
-          items: items.map<DropdownMenuItem<String>>((String value) {
+          items: items.map<DropdownMenuItem<String>>((DropDownItem item) {
             return DropdownMenuItem<String>(
-              value: value,
-              child: Center(child: Text(value)),
+              value: item.value,
+              child: Center(child: Text(item.name)),
             );
           }).toList(),
           decoration: buildInputDecoration()
@@ -57,6 +57,13 @@ class CustomDropDownWidget extends StatelessWidget {
     //   child:
     // );
   }
+}
+
+class DropDownItem {
+  String name;
+  String value;
+
+  DropDownItem({required this.name,required this.value});
 }
 
 BoxDecoration buildBoxDecoration() {
