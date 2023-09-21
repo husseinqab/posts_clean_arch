@@ -87,10 +87,15 @@ void init() {
   //data
   sl.registerLazySingleton<RegisterStrigaDataSource>(() => RegisterStrigaDataSourceImpl(client: sl()));
 
-  ///feature: RegisterStriga
+  ///feature: VerifyEmail
   sl.registerFactory(() => VerifyEmailBloc(sl()));
   //usecase
   sl.registerLazySingleton(() => VerifyEmailStriga(registerStrigaRepository: sl()));
+
+  ///feature: VerifyPhone
+  sl.registerFactory(() => VerifyPhoneBloc(sl()));
+  //usecase
+  sl.registerLazySingleton(() => VerifyPhoneStriga(registerStrigaRepository: sl()));
 
 
   //core

@@ -3,7 +3,7 @@ import 'package:posts_clean_arch/core/errors/failure.dart';
 import 'package:posts_clean_arch/core/usecase.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
-import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_email_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/repositories/register_striga_repository.dart';
 import 'package:posts_clean_arch/fearutres/passengers/domain/entities/passenger.dart';
 import 'package:posts_clean_arch/fearutres/passengers/domain/repositories/passengers_repository.dart';
@@ -19,13 +19,24 @@ class RegisterInStriga extends UseCase<RegisterStrigaResponse, RegisterStrigaReq
   }
 }
 
-class VerifyEmailStriga extends UseCase<String, VerifyEmailRequest> {
+class VerifyEmailStriga extends UseCase<String, VerifyIdentityRequest> {
   final RegisterStrigaRepository registerStrigaRepository;
 
   VerifyEmailStriga({required this.registerStrigaRepository});
 
   @override
-  Future<Either<Failure, String>> call(VerifyEmailRequest request) async {
+  Future<Either<Failure, String>> call(VerifyIdentityRequest request) async {
     return await registerStrigaRepository.verifyEmailStriga(request);
+  }
+}
+
+class VerifyPhoneStriga extends UseCase<String, VerifyIdentityRequest> {
+  final RegisterStrigaRepository registerStrigaRepository;
+
+  VerifyPhoneStriga({required this.registerStrigaRepository});
+
+  @override
+  Future<Either<Failure, String>> call(VerifyIdentityRequest request) async {
+    return await registerStrigaRepository.verifyPhoneStriga(request);
   }
 }

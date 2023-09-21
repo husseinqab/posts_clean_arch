@@ -44,3 +44,22 @@ class VerifyEmailBloc extends Bloc<VerifyEmailStrigaEvent, VerifyIdentityState> 
 
   }
 }
+
+class VerifyPhoneBloc extends Bloc<VerifyPhoneStrigaEvent, VerifyIdentityState> {
+  final VerifyPhoneStriga verifyPhoneStriga;
+
+  VerifyPhoneBloc(this.verifyPhoneStriga) : super(VerifyIdentityInitial()) {
+    on<VerifyPhoneStrigaEvent>((event, emit) async {
+      if (event is VerifyPhoneStrigaEvent) {
+        emit(VerifyIdentityLoading());
+        final eitherFailureOrAirlinesList = await verifyPhoneStriga(event.request);
+
+        eitherFailureOrAirlinesList.fold(
+                (failure) => emit(
+                VerifyIdentityFailed(message: Helpers.mapFailureToMessage(failure))),
+                (verifyResponse) => emit(VerifyIdentityLoaded(verifyResponse: verifyResponse)));
+      }
+    });
+
+  }
+}

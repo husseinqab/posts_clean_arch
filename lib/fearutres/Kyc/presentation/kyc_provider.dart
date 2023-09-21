@@ -138,9 +138,9 @@ class KycProvider extends ChangeNotifier {
 
   validatePhoneVCode(BuildContext context){
     if (phoneVFormKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      /*ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Phone Verified')),
-      );
+      );*/
     }
     notifyListeners();
   }
@@ -161,6 +161,14 @@ class KycProvider extends ChangeNotifier {
 
   setPhoneVCode(value){
     phoneVCode = value;
+    notifyListeners();
+  }
+
+  moveToUpdateData(BuildContext context){
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Verified phone successfully')),
+    );
+    tabController.animateTo(tabController.index + 1);
     notifyListeners();
   }
   var documentIssueController = TextEditingController(text: '');

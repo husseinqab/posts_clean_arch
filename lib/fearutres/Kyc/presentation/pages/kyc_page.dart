@@ -7,7 +7,7 @@ import 'package:posts_clean_arch/core/constants/kyc_data_constants.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/decorated_text_field.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/rounded_button.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
-import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_email_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_bloc.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_event.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_state.dart';
@@ -35,6 +35,9 @@ class _KycPageState extends State<KycPage> {
         ),
         BlocProvider<VerifyEmailBloc>(
           create: (context) => sl<VerifyEmailBloc>(),
+        ),
+        BlocProvider<VerifyPhoneBloc>(
+          create: (context) => sl<VerifyPhoneBloc>(),
         ),
       ],
       child: ChangeNotifierProvider(
@@ -109,17 +112,20 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
                   if (context.read<KycProvider>().isValidEmailCode()) {
                     BlocProvider.of<VerifyEmailBloc>(context).add(
                         VerifyEmailStrigaEvent(
-                            request: VerifyEmailRequest(
+                            request: VerifyIdentityRequest(
                                 userId: provider.strigaUserId,
-                                verificationId: provider.phoneVCode)));
+                                verificationId: provider.emailVCode)));
                     /*provider.tabController
                         .animateTo(provider.tabController.index + 1);*/
                   }
                 } else if (provider.tabController.index == 2) {
                   context.read<KycProvider>().validatePhoneVCode(context);
                   if (context.read<KycProvider>().isValidPhoneCode()) {
-                    provider.tabController
-                        .animateTo(provider.tabController.index + 1);
+                    BlocProvider.of<VerifyPhoneBloc>(context).add(
+                        VerifyPhoneStrigaEvent(
+                            request: VerifyIdentityRequest(
+                                userId: provider.strigaUserId,
+                                verificationCode: provider.phoneVCode)));
                   }
                 } else if (provider.tabController.index == 3) {
                   context.read<KycProvider>().validateUpdateData(context);
@@ -283,6 +289,7 @@ class VerifyMailPage extends StatelessWidget {
                         child: CircularProgressIndicator(),
                       );
                     } else if (state is VerifyIdentityFailed) {
+                      ///TODO:Remove later
                       provider.tabController
                           .animateTo(provider.tabController.index + 1);
                       return Center(child: Text(state.message));
@@ -325,6 +332,27 @@ class VerifyPhonePage extends StatelessWidget {
                     provider.setPhoneVCode(value);
                   },
                 ),
+                const SizedBox(height: 20),
+                BlocListener<VerifyPhoneBloc, VerifyIdentityState>(
+                    listener: (context, state) {
+                  if (state is VerifyIdentityLoaded) {
+                    provider.moveToUpdateData(context);
+                  }
+                }, child: BlocBuilder<VerifyPhoneBloc, VerifyIdentityState>(
+                  builder: (context, state) {
+                    if (state is VerifyIdentityLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is VerifyIdentityFailed) {
+                      ///TODO:Remove later
+                       provider.tabController
+                          .animateTo(provider.tabController.index + 1);
+                      return Center(child: Text(state.message));
+                    }
+                    return const SizedBox();
+                  },
+                ))
               ],
             ),
           );
