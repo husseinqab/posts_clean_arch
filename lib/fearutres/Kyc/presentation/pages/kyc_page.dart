@@ -7,9 +7,11 @@ import 'package:posts_clean_arch/core/constants/kyc_data_constants.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/decorated_text_field.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/rounded_button.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_email_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_bloc.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_event.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_state.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/verify_identity_state.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/kyc_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -26,8 +28,15 @@ class KycPage extends StatefulWidget {
 class _KycPageState extends State<KycPage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RegisterInStrigaBloc>(
-      create: (context) => sl<RegisterInStrigaBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<RegisterInStrigaBloc>(
+          create: (context) => sl<RegisterInStrigaBloc>(),
+        ),
+        BlocProvider<VerifyEmailBloc>(
+          create: (context) => sl<VerifyEmailBloc>(),
+        ),
+      ],
       child: ChangeNotifierProvider(
           create: (_) => KycProvider(), child: const KycBody()),
     );
@@ -42,12 +51,12 @@ class KycBody extends StatefulWidget {
 }
 
 class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    context.read<KycProvider>().tabController = TabController(vsync: this, length: context.read<KycProvider>().tabBarViews.length);
+    context.read<KycProvider>().tabController = TabController(
+        vsync: this, length: context.read<KycProvider>().tabBarViews.length);
     //_tabController = TabController(vsync: this, length: tabBarViews.length);
   }
 
@@ -82,28 +91,35 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
                   context.read<KycProvider>().validateRegister(context);
                   if (context.read<KycProvider>().isValidRegister()) {
                     // Trigger EVENT
-                    BlocProvider.of<RegisterInStrigaBloc>(context)
-                        .add(RegisterInStrigaEvent(
-                        request: RegisterStrigaRequest(
-                            firstName: context.read<KycProvider>().firstName,
-                            lastName: context.read<KycProvider>().lastName,
-                            email: context.read<KycProvider>().email,
-                            mobile: Mobile(
-                              countryCode:
-                              context.read<KycProvider>().countryCode,
-                              number: context.read<KycProvider>().phone,
-                            ))));
-
+                    BlocProvider.of<RegisterInStrigaBloc>(context).add(
+                        RegisterInStrigaEvent(
+                            request: RegisterStrigaRequest(
+                                firstName:
+                                    context.read<KycProvider>().firstName,
+                                lastName: context.read<KycProvider>().lastName,
+                                email: context.read<KycProvider>().email,
+                                mobile: Mobile(
+                                  countryCode:
+                                      context.read<KycProvider>().countryCode,
+                                  number: context.read<KycProvider>().phone,
+                                ))));
                   }
                 } else if (provider.tabController.index == 1) {
                   context.read<KycProvider>().validateEmailVCode(context);
                   if (context.read<KycProvider>().isValidEmailCode()) {
-                    provider.tabController.animateTo(provider.tabController.index + 1);
+                    BlocProvider.of<VerifyEmailBloc>(context).add(
+                        VerifyEmailStrigaEvent(
+                            request: VerifyEmailRequest(
+                                userId: provider.strigaUserId,
+                                verificationId: provider.phoneVCode)));
+                    /*provider.tabController
+                        .animateTo(provider.tabController.index + 1);*/
                   }
                 } else if (provider.tabController.index == 2) {
                   context.read<KycProvider>().validatePhoneVCode(context);
                   if (context.read<KycProvider>().isValidPhoneCode()) {
-                    provider.tabController.animateTo(provider.tabController.index + 1);
+                    provider.tabController
+                        .animateTo(provider.tabController.index + 1);
                   }
                 } else if (provider.tabController.index == 3) {
                   context.read<KycProvider>().validateUpdateData(context);
@@ -199,20 +215,21 @@ class RegisterInStrigaPage extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 20),
-              BlocListener<RegisterInStrigaBloc,
-                  RegisterStrigaState>(listener: (context, state) {
+              BlocListener<RegisterInStrigaBloc, RegisterStrigaState>(
+                  listener: (context, state) {
                 if (state is RegisterStrigaLoaded) {
-                  provider.moveToVerifyEmail(context,state.registerStrigaResponse);
+                  //provider.moveToVerifyEmail(context,state.registerStrigaResponse);
                 }
-              }, child:
-              BlocBuilder<RegisterInStrigaBloc, RegisterStrigaState>(
+              }, child: BlocBuilder<RegisterInStrigaBloc, RegisterStrigaState>(
                 builder: (context, state) {
                   if (state is RegisterStrigaLoading) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   } else if (state is RegisterStrigaFailed) {
-                    provider.tabController.animateTo(provider.tabController.index + 1);
+                    ///TODO: Remove later
+                    provider.tabController
+                        .animateTo(provider.tabController.index + 1);
                     return Center(child: Text(state.message));
                   }
                   return const SizedBox();
@@ -252,7 +269,27 @@ class VerifyMailPage extends StatelessWidget {
                   textChanged: (value) {
                     provider.setEmailVCode(value);
                   },
-                )
+                ),
+                const SizedBox(height: 20),
+                BlocListener<VerifyEmailBloc, VerifyIdentityState>(
+                    listener: (context, state) {
+                  if (state is VerifyIdentityLoaded) {
+                    provider.moveToVerifyPhone(context);
+                  }
+                }, child: BlocBuilder<VerifyEmailBloc, VerifyIdentityState>(
+                  builder: (context, state) {
+                    if (state is VerifyIdentityLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is VerifyIdentityFailed) {
+                      provider.tabController
+                          .animateTo(provider.tabController.index + 1);
+                      return Center(child: Text(state.message));
+                    }
+                    return const SizedBox();
+                  },
+                ))
               ],
             ),
           );

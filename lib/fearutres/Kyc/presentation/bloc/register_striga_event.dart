@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_email_request.dart';
 
 abstract class StrigaEvent extends Equatable {
   const StrigaEvent();
@@ -13,3 +14,14 @@ class RegisterInStrigaEvent extends StrigaEvent {
   // TODO: implement props
   List<Object?> get props => [request];
 }
+
+
+class VerifyEmailStrigaEvent extends StrigaEvent {
+  VerifyEmailRequest request;
+  VerifyEmailStrigaEvent({required this.request});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [request];
+}
+

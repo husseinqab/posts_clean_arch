@@ -109,9 +109,9 @@ class KycProvider extends ChangeNotifier {
 
   validateEmailVCode(BuildContext context){
     if (emailVFormKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      /*ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email Verified')),
-      );
+      );*/
     }
     notifyListeners();
   }
@@ -142,6 +142,14 @@ class KycProvider extends ChangeNotifier {
         const SnackBar(content: Text('Phone Verified')),
       );
     }
+    notifyListeners();
+  }
+
+  moveToVerifyPhone(BuildContext context){
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Verified mail successfully')),
+    );
+    tabController.animateTo(tabController.index + 1);
     notifyListeners();
   }
 

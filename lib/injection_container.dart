@@ -87,6 +87,11 @@ void init() {
   //data
   sl.registerLazySingleton<RegisterStrigaDataSource>(() => RegisterStrigaDataSourceImpl(client: sl()));
 
+  ///feature: RegisterStriga
+  sl.registerFactory(() => VerifyEmailBloc(sl()));
+  //usecase
+  sl.registerLazySingleton(() => VerifyEmailStriga(registerStrigaRepository: sl()));
+
 
   //core
   sl.registerLazySingleton<RestHelper>(() => HttpHelper(client: sl()));
