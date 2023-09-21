@@ -97,6 +97,11 @@ void init() {
   //usecase
   sl.registerLazySingleton(() => VerifyPhoneStriga(registerStrigaRepository: sl()));
 
+  ///feature: UpdateData
+  sl.registerFactory(() => UpdateDataBloc(sl()));
+  //usecase
+  sl.registerLazySingleton(() => UpdateDataStriga(registerStrigaRepository: sl()));
+
 
   //core
   sl.registerLazySingleton<RestHelper>(() => HttpHelper(client: sl()));

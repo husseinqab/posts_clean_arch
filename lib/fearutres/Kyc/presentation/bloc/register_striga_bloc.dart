@@ -63,3 +63,21 @@ class VerifyPhoneBloc extends Bloc<VerifyPhoneStrigaEvent, VerifyIdentityState> 
 
   }
 }
+
+class UpdateDataBloc extends Bloc<UpdateDataEvent, VerifyIdentityState> {
+  final UpdateDataStriga updateDataStriga;
+
+  UpdateDataBloc(this.updateDataStriga) : super(VerifyIdentityInitial()) {
+    on<UpdateDataEvent>((event, emit) async {
+      if (event is UpdateDataEvent) {
+        emit(VerifyIdentityLoading());
+        final eitherFailureOrAirlinesList = await updateDataStriga(event.request);
+
+        eitherFailureOrAirlinesList.fold(
+                (failure) => emit(
+                VerifyIdentityFailed(message: Helpers.mapFailureToMessage(failure))),
+                (updateResponse) => emit(VerifyIdentityLoaded(verifyResponse: updateResponse)));
+      }
+    });
+  }
+}

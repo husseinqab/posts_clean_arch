@@ -25,4 +25,10 @@ class DioHelper extends RestHelper {
     // TODO: implement post
     throw UnimplementedError();
   }
+
+  @override
+  Future patch(String url, Map<String, dynamic> body) {
+    // TODO: implement patch
+    throw UnimplementedError();
+  }
 }

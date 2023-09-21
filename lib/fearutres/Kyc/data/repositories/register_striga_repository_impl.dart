@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:posts_clean_arch/core/errors/failure.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/data/datasources/register_striga_remote_datasource.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/update_data_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_request.dart';
@@ -28,5 +29,11 @@ class RegisterStrigaRepositoryImpl extends RegisterStrigaRepository {
   @override
   Future<Either<Failure, String>> verifyPhoneStriga(VerifyIdentityRequest request) async {
     return await callApi(() => remoteDataSource.verifyPhoneStriga(request));
+  }
+
+  @override
+  Future<Either<Failure, String>> updateData(UpdateDataRequest request) async {
+    return await callApi(() => remoteDataSource.updateData(request));
+
   }
 }

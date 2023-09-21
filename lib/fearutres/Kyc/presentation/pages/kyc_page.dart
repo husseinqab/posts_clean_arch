@@ -7,6 +7,7 @@ import 'package:posts_clean_arch/core/constants/kyc_data_constants.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/decorated_text_field.dart';
 import 'package:posts_clean_arch/core/widgets_helpers/rounded_button.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/update_data_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_bloc.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_event.dart';
@@ -38,6 +39,9 @@ class _KycPageState extends State<KycPage> {
         ),
         BlocProvider<VerifyPhoneBloc>(
           create: (context) => sl<VerifyPhoneBloc>(),
+        ),
+        BlocProvider<UpdateDataBloc>(
+          create: (context) => sl<UpdateDataBloc>(),
         ),
       ],
       child: ChangeNotifierProvider(
@@ -129,6 +133,31 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
                   }
                 } else if (provider.tabController.index == 3) {
                   context.read<KycProvider>().validateUpdateData(context);
+                  BlocProvider.of<UpdateDataBloc>(context).add(UpdateDataEvent(
+                      request: UpdateDataRequest(
+                          userId: provider.strigaUserId,
+                          firstName: "DoubleFinance",
+                          lastName: "User",
+                          dateOfBirth:
+                              DateOfBirth(day: 5, month: 10, year: 1994),
+                          address: Address(
+                            addressLine1: provider.addressLine1,
+                            city: provider.city,
+                            country: provider.country,
+                            postalCode: provider.postalCode,
+                          ),
+                          expectedIncomingTxVolumeYearly:
+                              provider.expectedIncomingTxVolumeYearly,
+                          expectedOutgoingTxVolumeYearly:
+                              provider.expectedOutgoingTxVolumeYearly,
+                          nationality: provider.nationality,
+                          occupation: provider.occupation,
+                          placeOfBirth: "IRQ",
+                          purposeOfAccount: "Something",
+                          purposeOfAccountOther: "Something",
+                          selfPepDeclaration: provider.pepSelected,
+                          sourceOfFunds: provider.sourceOfFunds,
+                          sourceOfFundsOther: "Something")));
                 }
               }
             },
@@ -220,7 +249,7 @@ class RegisterInStrigaPage extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               BlocListener<RegisterInStrigaBloc, RegisterStrigaState>(
                   listener: (context, state) {
                 if (state is RegisterStrigaLoaded) {
@@ -346,7 +375,7 @@ class VerifyPhonePage extends StatelessWidget {
                       );
                     } else if (state is VerifyIdentityFailed) {
                       ///TODO:Remove later
-                       provider.tabController
+                      provider.tabController
                           .animateTo(provider.tabController.index + 1);
                       return Center(child: Text(state.message));
                     }
@@ -630,6 +659,26 @@ class UpdateUserPage extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
+              BlocListener<UpdateDataBloc, VerifyIdentityState>(
+                  listener: (context, state) {
+                    if (state is VerifyIdentityLoaded) {
+                      //provider.startKYC(context);
+                    }
+                  }, child: BlocBuilder<UpdateDataBloc, VerifyIdentityState>(
+                builder: (context, state) {
+                  if (state is VerifyIdentityLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is VerifyIdentityFailed) {
+                    ///TODO:Remove later
+                    /*provider.tabController
+                        .animateTo(provider.tabController.index + 1);*/
+                    return Center(child: Text(state.message));
+                  }
+                  return const SizedBox();
+                },
+              ))
             ],
           ),
         );
