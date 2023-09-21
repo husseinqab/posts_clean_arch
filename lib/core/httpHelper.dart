@@ -28,10 +28,9 @@ class HttpHelper extends RestHelper {
     String url,
   ) async {
     try {
-      Response httpResponse =
-          await client.get(Uri.parse(url));
+      Response httpResponse = await client.get(Uri.parse(url));
       //return httpResponse.body;
-       return _handleStatusCode(httpResponse);
+      return _handleStatusCode(httpResponse);
     } catch (_) {
       throw UnExpectedException();
     }
@@ -39,29 +38,29 @@ class HttpHelper extends RestHelper {
 
   @override
   Future post(String url, Map<String, dynamic> body) async {
-      Response httpResponse =
-          await client.post(Uri.parse(url), body: jsonEncode(body), headers: headers);
+    Response httpResponse = await client.post(Uri.parse(url),
+        body: jsonEncode(body), headers: headers);
 
-      return _handleStatusCode(httpResponse);
-    }
+    return _handleStatusCode(httpResponse);
+  }
 
   dynamic _handleStatusCode(Response httpResponse) {
     if (httpResponse.statusCode == 200) {
-
       var response = apiResponseFromJson(httpResponse.body);
-      if (response.statusCode == 200){
+      print(jsonDecode(jsonEncode(httpResponse.body)));
+      if (response.statusCode == 200) {
         return response.data;
-      } else if (response.statusCode == -1){
+      } else if (response.statusCode == -1) {
         List<dynamic> validationErrors = jsonDecode(jsonEncode(response.data));
 
         throw DWApiException(message: validationErrors[0]);
-      } else if (response.statusCode == 2){
+      } else if (response.statusCode == 2) {
         List<dynamic> strigaErrors = jsonDecode(jsonEncode(response.data));
         dynamic error = jsonDecode(jsonEncode(strigaErrors[0]));
         throw DWApiException(message: error["msg"]);
-
+      } else if (response.statusCode == 400) {
+        throw DWApiException(message: response.data);
       } else {
-        final message = jsonDecode(jsonEncode(response.message));
         throw DWApiException(message: response.message);
       }
     } else if (httpResponse.statusCode == 401) {
@@ -76,7 +75,8 @@ class HttpHelper extends RestHelper {
   }
 }
 
-ApiResponse apiResponseFromJson(String str) => ApiResponse.fromJson(json.decode(str));
+ApiResponse apiResponseFromJson(String str) =>
+    ApiResponse.fromJson(json.decode(str));
 
 class ApiResponse<T> {
   final int statusCode;
@@ -90,12 +90,8 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) => ApiResponse(
-    statusCode: json["statusCode"],
-    message: json["message"],
-    data: json["data"],
-  );
-
+        statusCode: json["statusCode"],
+        message: json["message"],
+        data: json["data"],
+      );
 }
-
-
-
