@@ -25,8 +25,8 @@ class RegisterStrigaDataSourceImpl implements RegisterStrigaDataSource {
 
       return registerStrigaModelFromJson(jsonEncode(body));
     } catch (e) {
-      print(e);
-      throw UnExpectedException();
+      print(e.toString());
+      rethrow;
     }
   }
 }

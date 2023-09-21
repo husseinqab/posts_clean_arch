@@ -39,23 +39,30 @@ class HttpHelper extends RestHelper {
 
   @override
   Future post(String url, Map<String, dynamic> body) async {
-    try {
       Response httpResponse =
           await client.post(Uri.parse(url), body: jsonEncode(body), headers: headers);
 
-      //return httpResponse.body;
       return _handleStatusCode(httpResponse);
-    } catch (e) {
-      print(e);
-      throw UnExpectedException();
     }
-  }
 
   dynamic _handleStatusCode(Response httpResponse) {
     if (httpResponse.statusCode == 200) {
+
       var response = apiResponseFromJson(httpResponse.body);
       if (response.statusCode == 200){
         return response.data;
+      } else if (response.statusCode == -1){
+        List<dynamic> validationErrors = jsonDecode(jsonEncode(response.data));
+
+        throw DWApiException(message: validationErrors[0]);
+      } else if (response.statusCode == 2){
+        List<dynamic> strigaErrors = jsonDecode(jsonEncode(response.data));
+        dynamic error = jsonDecode(jsonEncode(strigaErrors[0]));
+        throw DWApiException(message: error["msg"]);
+
+      } else {
+        final message = jsonDecode(jsonEncode(response.message));
+        throw DWApiException(message: response.message);
       }
     } else if (httpResponse.statusCode == 401) {
       throw UnAuthorizedException();

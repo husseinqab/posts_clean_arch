@@ -22,6 +22,8 @@ class GenericCall {
         return Left(NotFoundFailure());
       } on UnExpectedException {
         return Left(UnExpectedFailure());
+      } on DWApiException catch (e) {
+        return Left(DWApiFailure(message: e.message));
       }
     } else {
       return Left(NoInternetFailure());

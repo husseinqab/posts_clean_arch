@@ -1,3 +1,5 @@
+import 'package:posts_clean_arch/core/errors/exception.dart';
+
 import 'errors/failure.dart';
 
 class Helpers {
@@ -10,6 +12,8 @@ class Helpers {
       return 'UnAuthorized';
     } else if (failure is NotFoundFailure){
       return 'Not found';
+    } else if (failure is DWApiFailure){
+      return failure.message;
     }
     return 'Unexpected Error';
   }
