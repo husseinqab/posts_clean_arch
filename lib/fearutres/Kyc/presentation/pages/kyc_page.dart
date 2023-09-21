@@ -42,82 +42,78 @@ class KycBody extends StatefulWidget {
 }
 
 class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
-  static List<Widget> tabBarViews = <Widget>[
-    const RegisterInStrigaPage(),
-    const VerifyMailPage(),
-    const VerifyPhonePage(),
-    const UpdateUserPage(),
-  ];
-
-  late TabController _tabController;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _tabController = TabController(vsync: this, length: tabBarViews.length);
+    context.read<KycProvider>().tabController = TabController(vsync: this, length: context.read<KycProvider>().tabBarViews.length);
+    //_tabController = TabController(vsync: this, length: tabBarViews.length);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    _tabController.dispose();
+    Provider.of<KycProvider>(context).tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("KYC"),
-      ),
-      body: DefaultTabController(
-        length: tabBarViews.length,
-        child: TabBarView(
-            controller: _tabController,
-            physics: NeverScrollableScrollPhysics(),
-            children: tabBarViews),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: RoundedButton(
-          title: 'Next',
-          onPressed: () {
-            if (_tabController.index < tabBarViews.length) {
-              if (_tabController.index == 0) {
-                context.read<KycProvider>().validateRegister(context);
-                if (context.read<KycProvider>().isValidRegister()) {
-                  // Trigger EVENT
-                  BlocProvider.of<RegisterInStrigaBloc>(context)
-                      .add(RegisterInStrigaEvent(
-                          request: RegisterStrigaRequest(
-                              firstName: context.read<KycProvider>().firstName,
-                              lastName: context.read<KycProvider>().lastName,
-                              email: context.read<KycProvider>().email,
-                              mobile: Mobile(
-                                countryCode:
-                                    context.read<KycProvider>().countryCode,
-                                number: context.read<KycProvider>().phone,
-                              ))));
-                }
-              } else if (_tabController.index == 1) {
-                context.read<KycProvider>().validateEmailVCode(context);
-                if (context.read<KycProvider>().isValidEmailCode()) {
-                  _tabController.animateTo(_tabController.index + 1);
-                }
-              } else if (_tabController.index == 2) {
-                context.read<KycProvider>().validatePhoneVCode(context);
-                if (context.read<KycProvider>().isValidPhoneCode()) {
-                  _tabController.animateTo(_tabController.index + 1);
-                }
-              } else if (_tabController.index == 3) {
-                context.read<KycProvider>().validateUpdateData(context);
-              }
-            }
-          },
+    return Consumer<KycProvider>(builder: (_, provider, child) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text("KYC"),
         ),
-      ),
-    );
+        body: DefaultTabController(
+          length: provider.tabBarViews.length,
+          child: TabBarView(
+              controller: provider.tabController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: provider.tabBarViews),
+        ),
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: RoundedButton(
+            title: 'Next',
+            onPressed: () {
+              if (provider.tabController.index < provider.tabBarViews.length) {
+                if (provider.tabController.index == 0) {
+                  context.read<KycProvider>().validateRegister(context);
+                  if (context.read<KycProvider>().isValidRegister()) {
+                    // Trigger EVENT
+                    BlocProvider.of<RegisterInStrigaBloc>(context)
+                        .add(RegisterInStrigaEvent(
+                        request: RegisterStrigaRequest(
+                            firstName: context.read<KycProvider>().firstName,
+                            lastName: context.read<KycProvider>().lastName,
+                            email: context.read<KycProvider>().email,
+                            mobile: Mobile(
+                              countryCode:
+                              context.read<KycProvider>().countryCode,
+                              number: context.read<KycProvider>().phone,
+                            ))));
+
+                  }
+                } else if (provider.tabController.index == 1) {
+                  context.read<KycProvider>().validateEmailVCode(context);
+                  if (context.read<KycProvider>().isValidEmailCode()) {
+                    provider.tabController.animateTo(provider.tabController.index + 1);
+                  }
+                } else if (provider.tabController.index == 2) {
+                  context.read<KycProvider>().validatePhoneVCode(context);
+                  if (context.read<KycProvider>().isValidPhoneCode()) {
+                    provider.tabController.animateTo(provider.tabController.index + 1);
+                  }
+                } else if (provider.tabController.index == 3) {
+                  context.read<KycProvider>().validateUpdateData(context);
+                }
+              }
+            },
+          ),
+        ),
+      );
+    });
   }
 }
 
@@ -206,11 +202,7 @@ class RegisterInStrigaPage extends StatelessWidget {
               BlocListener<RegisterInStrigaBloc,
                   RegisterStrigaState>(listener: (context, state) {
                 if (state is RegisterStrigaLoaded) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(
-                            'Registered on striga with ${state.registerStrigaResponse.userId}')),
-                  );
+                  provider.moveToVerifyEmail(context,state.registerStrigaResponse);
                 }
               }, child:
               BlocBuilder<RegisterInStrigaBloc, RegisterStrigaState>(
@@ -220,6 +212,7 @@ class RegisterInStrigaPage extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   } else if (state is RegisterStrigaFailed) {
+                    provider.tabController.animateTo(provider.tabController.index + 1);
                     return Center(child: Text(state.message));
                   }
                   return const SizedBox();

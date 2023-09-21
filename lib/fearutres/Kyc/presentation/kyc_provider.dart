@@ -1,8 +1,18 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/presentation/pages/kyc_page.dart';
 
 class KycProvider extends ChangeNotifier {
+  final List<Widget> tabBarViews = <Widget>[
+    const RegisterInStrigaPage(),
+    const VerifyMailPage(),
+    const VerifyPhonePage(),
+    const UpdateUserPage(),
+  ];
+
+  late TabController tabController;
 
   static var globalValidator = (value) {
     if (value == null || value.isEmpty) {
@@ -71,6 +81,18 @@ class KycProvider extends ChangeNotifier {
         const SnackBar(content: Text('Registered on striga')),
       );*/
     }
+    notifyListeners();
+  }
+
+  var strigaUserId = '';
+
+  moveToVerifyEmail(BuildContext context,RegisterStrigaResponse response){
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Registered on striga')),
+    );
+    tabController.animateTo(tabController.index + 1);
+    /// TODO: STORE ON LOCAL STORAGE AND TAKE FROM THERE
+    strigaUserId = response.userId;
     notifyListeners();
   }
   final emailVFormKey = GlobalKey<FormState>();
