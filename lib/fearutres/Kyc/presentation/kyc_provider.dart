@@ -1,6 +1,12 @@
 
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:intl/intl.dart';
+import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/core/sumsub_helper.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/pages/kyc_page.dart';
@@ -10,7 +16,7 @@ class KycProvider extends ChangeNotifier {
     const RegisterInStrigaPage(),
     const VerifyMailPage(),
     const VerifyPhonePage(),
-    const UpdateUserPage(),
+    const UpdateUserPage()
   ];
 
   late TabController tabController;
@@ -35,12 +41,10 @@ class KycProvider extends ChangeNotifier {
   var email = '';
   String? Function(String?)? emailValidator = globalValidator;
 
-  var _countryCode = '';
+  var countryCode = '';
 
-  get countryCode => _countryCode;
-
-  set countryCode(value) {
-    _countryCode = "+$value";
+  setCountryCode(value) {
+    countryCode = "+$value";
     countryCodeController.text = "+ $value";
     notifyListeners();
   }
@@ -85,7 +89,7 @@ class KycProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  var strigaUserId = '';
+  var strigaUserId = '3a4e6072-9a66-4ff5-97b7-9393edc9103c';
 
   moveToVerifyEmail(BuildContext context,RegisterStrigaResponse response){
     ScaffoldMessenger.of(context).showSnackBar(
@@ -174,13 +178,11 @@ class KycProvider extends ChangeNotifier {
   }
   var documentIssueController = TextEditingController(text: '');
 
-  var _documentIssuingCountry = '';
+  var documentIssuingCountry = '';
 
-  get documentIssuingCountry => _documentIssuingCountry.isEmpty ? 'Document Issuing Country' : _documentIssuingCountry;
-
-  set documentIssuingCountry(value) {
+  setDocumentIssuingCountry(value) {
     documentIssueController.text = value.name + " " + value.flagEmoji;
-    _documentIssuingCountry = value.countryCode;
+    documentIssuingCountry = value.countryCode;
     notifyListeners();
   }
 
@@ -188,139 +190,118 @@ class KycProvider extends ChangeNotifier {
 
   var nationalityController = TextEditingController(text: '');
 
-  var _nationality = '';
+  var nationality = '';
 
-  get nationality => _nationality.isEmpty ?  'Nationality' : _nationality;
-
-  set nationality(value) {
+  setNationality(value) {
     nationalityController.text = value.name + " " + value.flagEmoji;
-    _nationality = value.countryCode;
+    nationality = value.countryCode;
     notifyListeners();
   }
 
   String? Function(String?)? nationalityValidator = globalValidator;
 
-  var _occupation = '';
-
-
-  get occupation => _occupation.isEmpty ? 'Occupation' : _occupation;
+  var occupation = '';
 
   String? Function(String?)? occupationValidator = globalValidator;
 
 
-  set occupation(value) {
-    _occupation = value;
+  setOccupation(value) {
+    occupation = value;
     notifyListeners();
   }
-  var _sourceOfFunds = '';
+  var sourceOfFunds = '';
 
-  get sourceOfFunds => _sourceOfFunds.isEmpty ? 'Source of funds' : _sourceOfFunds;
 
   String? Function(String?)? sourceOfFundsValidator = globalValidator;
 
 
-  set sourceOfFunds(value) {
-    _sourceOfFunds = value;
+  setSourceOfFunds(value) {
+    sourceOfFunds = value;
     notifyListeners();
   }
-  var _purposeOfAccount = '';
+  var purposeOfAccount = '';
 
-  get purposeOfAccount => _purposeOfAccount.isEmpty ? 'Purpose of Account' : _purposeOfAccount;
-
-  set purposeOfAccount(value) {
-    _purposeOfAccount = value;
+  setPurposeOfAccount(value) {
+    purposeOfAccount = value;
     notifyListeners();
   }
-  var _placeOfBirth = '';
+  var placeOfBirth = '';
 
-  get placeOfBirth => _placeOfBirth.isEmpty ? 'Place of Birth' : _placeOfBirth;
   var placeOfBirthController = TextEditingController(text: '');
 
 
-  set placeOfBirth(value) {
+  setPlaceOfBirth(value) {
     placeOfBirthController.text = value.name + " " + value.flagEmoji;
-    _placeOfBirth = value.countryCode;
+    placeOfBirth = value.countryCode;
     notifyListeners();
   }
 
   String? Function(String?)? placeOfBirthValidator = globalValidator;
 
-  var _expectedOutgoingTxVolumeYearly = '';
+  var expectedOutgoingTxVolumeYearly = '';
 
-  get expectedOutgoingTxVolumeYearly => _expectedOutgoingTxVolumeYearly.isEmpty ? 'Annually outgoing transactions volume' : _expectedOutgoingTxVolumeYearly;
 
-  set expectedOutgoingTxVolumeYearly(value) {
-    _expectedOutgoingTxVolumeYearly = value;
+  setExpectedOutgoingTxVolumeYearly(value) {
+    expectedOutgoingTxVolumeYearly = value;
     notifyListeners();
   }
 
   String? Function(String?)? expectedOutgoingValidator = globalValidator;
 
-  var _expectedIncomingTxVolumeYearly = '';
+  var expectedIncomingTxVolumeYearly = '';
 
-  get expectedIncomingTxVolumeYearly => _expectedIncomingTxVolumeYearly.isEmpty ? 'Annually outgoing transactions volume' : _expectedIncomingTxVolumeYearly;
 
-  set expectedIncomingTxVolumeYearly(value) {
-    _expectedIncomingTxVolumeYearly = value;
+  setExpectedIncomingTxVolumeYearly(value) {
+    expectedIncomingTxVolumeYearly = value;
     notifyListeners();
   }
 
   String? Function(String?)? expectedIncomingValidator = globalValidator;
 
-  var _addressLine1 = '';
+  var addressLine1 = '';
 
-  get addressLine1 => _addressLine1;
 
-  set addressLine1(value) {
-    _addressLine1 = value;
+  setAddressLine1(value) {
+    addressLine1 = value;
     notifyListeners();
 
   }
-  var _addressLine2 = '';
+  var addressLine2 = '';
 
-  get addressLine2 => _addressLine2;
 
-  set addressLine2(value) {
-    _addressLine2 = value;
+  setAddressLine2(value) {
+    addressLine2 = value;
     notifyListeners();
   }
-  var _city = '';
+  var city = '';
 
-  get city => _city;
-
-  set city(value) {
-    _city = value;
+  setCity(value) {
+    city = value;
     notifyListeners();
 
   }
-  var _country = '';
-
-  get country => _country.isEmpty ? 'Address country' : _country;
+  var country = '';
 
   String? Function(String?)? countryValidator = globalValidator;
   var countryController = TextEditingController(text: '');
 
-  set country(value) {
+  setCountry(value) {
     countryController.text = value.name + " " + value.flagEmoji;
-    _country = value.countryCode;
+    country = value.countryCode;
     notifyListeners();
 
   }
-  var _postalCode = '';
+  var postalCode = '';
 
-  get postalCode => _postalCode;
-
-  set postalCode(value) {
-    _postalCode = value;
+  setPostalCode(value) {
+    postalCode = value;
     notifyListeners();
 
   }
-  var _province = '';
+  var province = '';
 
-  get province => _province;
-
-  set province(value) {
-    _province = value;
+  setProvince(value) {
+    province = value;
     notifyListeners();
 
   }
@@ -338,26 +319,23 @@ class KycProvider extends ChangeNotifier {
 
 
   validateUpdateData(BuildContext context){
-    if (updateDataFormKey.currentState!.validate()) {
+/*    if (updateDataFormKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Start KYC')),
       );
-
-    }
-
+    }*/
     notifyListeners();
   }
 
 
   var birthdayController = TextEditingController(text: '');
 
-  var _birthday= '';
+  dynamic birthday;
 
-  get birthday => _birthday.isEmpty;
-
-  set birthday(value) {
-    _birthday = value;
-    birthdayController.text = value;
+  setBirthday(value) {
+    var formatted = DateFormat('yyyy-MM-dd').format(value!);
+    birthday = value;
+    birthdayController.text = formatted;
     notifyListeners();
   }
 
@@ -404,28 +382,49 @@ class KycProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startKYC(BuildContext context) {
+  void startKYC(BuildContext context) async {
     ///TODO CALL START KYC
     var token = '';
-    SumsubHelper.launchSDK(token);
+    final Client client = Client();
+     var accesstoken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IlpRUEg2UU1FTlhLNE5LOTRaTFlSOEIwRVMwRzNHOEc2OFdHQVVGN0QiLCJ0eXAiOiJhdCtqd3QifQ.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjE0OTJlYmYxLTI0N2UtNGVkYi1iOWE4LTc5YmFhNGU2OGZmNyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJzYXJhaC5zbGltYW4yMjJAZ21haWwuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZW1haWxhZGRyZXNzIjoic2FyYWguc2xpbWFuMjIyQGdtYWlsLmNvbSIsInJlZmVycmFsIjoiZGZpIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiVXNlciIsIm9pX3Byc3QiOiJ0ZXN0LWRvdWJsZXdhbGxldC13ZWIiLCJpc3MiOiJodHRwczovL3NhbmRib3guZG91Ymxld2FsbGV0LmlvLyIsIm9pX2F1X2lkIjoiNDIzZjVkNTItMGZhNy00N2Y1LTllNmMtMjBlMjZhMDk0NmZiIiwic3ViIjoiMTQ5MmViZjEtMjQ3ZS00ZWRiLWI5YTgtNzliYWE0ZTY4ZmY3IiwibmFtZSI6InNhcmFoLnNsaW1hbjIyMkBnbWFpbC5jb20iLCJlbWFpbCI6InNhcmFoLnNsaW1hbjIyMkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6IlRydWUiLCJyb2xlIjoiVXNlciIsImNsaWVudF9pZCI6InRlc3QtZG91Ymxld2FsbGV0LXdlYiIsIm9pX3Rrbl9pZCI6IjA1ZTY3YmI4LTkwZjMtNGUzYy04MGE3LWI2YzQ0NzY2Y2NhOCIsInNjb3BlIjoicGhvbmUgZW1haWwgcHJvZmlsZSByb2xlcyIsImp0aSI6ImI1YTE5MGEyLWM2NTEtNDY4ZS05NmM4LWY1ODUyYWZkODk3MiIsImV4cCI6MTY5NTMzMzU4NiwiaWF0IjoxNjk1MzMxNzg2fQ.UwvvaY1Jy8qn3GIESYJHlczzxn5vMRzTJiyAxb5cGCTB1hIEACuFrf2WP5OZFEhPTNCBbhH1Hr_8N5rcRwMpGX7HYwsExGT6E23s3jy1H6VGkkJZdVzQFiW1VKbq_PDOeZZ4bkkhi2kqi15WVOIlBCpCWryvVMJ9RaQLqErz5w0CHrKijgt4Tt1c2TVPuHq0qcuet77W6rRMWPUgqMDAmAvPPMCEUa1SDRGg7lEXJLiVaZ3FXQMu2Lq4Ru4DGbpm0OK_TnxwgD4vyeZUAw7Yy6UZu5EUeeBH_jrCY3TBfFKWDzvPLw1kgxM8-m1c7PesdQBiOFUvO4IcC3bu2a9y7w';
+    final headers = {'Content-Type': 'application/json',
+      'Authorization': "Bearer $accesstoken"};
+    Response response = await client.post(Uri.parse('https://sandbox.doublewallet.io/api/Users/StartKyc'), body:jsonEncode({
+      "userId": strigaUserId,
+      "clientId":"Double-finance"
+    }),headers: headers);
+
+    if (response.statusCode == 200){
+      var apiResponse = apiResponseFromJson(response.body);
+      if (response.statusCode == 200){
+       // Navigator.pushNamed(context, "/FinalKYC");
+        token = apiResponse.data["token"];
+        SumsubHelper.launchSDK(token);
+      } else if (response.statusCode == 30032) {
+        tabController.animateTo(3);
+      }
+    } else {
+     // Navigator.pushNamed(context, "/FinalKYC");
+    }
+    notifyListeners();
   }
 
-  void checkTheRightFlow() {
+  void checkTheRightFlow(BuildContext context) {
     ///TODO: GET USER FROM LOCAL STORAGE
     String? strigaUser;
     if (strigaUser != null){
       ///TODO: CALL GET USER INFO
-      bool emailVerified = true;
-      bool phoneVerified = true;
+      bool emailVerified = false;
+      bool phoneVerified = false;
       String kycStatus = 'NOT_STARTED';
 
-      if (kycStatus == 'INITIALIZED'){
+      if (kycStatus == 'INITIATED'){
         ///TODO: CALL START KYC
-        var token = '';
-        SumsubHelper.launchSDK(token);
+       // Navigator.pushNamed(context, "/FinalKYC");
+        startKYC(context);
       } else if (kycStatus == 'NOT_STARTED') {
         if (emailVerified & phoneVerified){
-          tabController.animateTo(3);
+          startKYC(context);
         } else {
           if (!emailVerified & !phoneVerified){
             tabController
@@ -436,6 +435,7 @@ class KycProvider extends ChangeNotifier {
           }
         }
       } else {
+        tabController.animateTo(4);
         ///TODO SHOW PAGE WITH THE CURRENT KYC STATUS
       }
     }

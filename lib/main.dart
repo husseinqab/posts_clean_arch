@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Clean Posts'),
-          actions: [
+/*          actions: [
             IconButton(
                 onPressed: () {
                   Navigator.pushNamed(context, "/users");
@@ -83,9 +83,9 @@ class HomePage extends StatelessWidget {
                   Navigator.pushNamed(context, "/KYC");
                 },
                 icon: const Icon(Icons.insert_drive_file))
-          ],
+          ],*/
         ),
-        body: BlocBuilder<PostBloc, PostState>(
+        /*body: BlocBuilder<PostBloc, PostState>(
           builder: (context, state) {
             if (state is PostInitial) {
               return const Center(child: Text('Posts page'));
@@ -98,8 +98,15 @@ class HomePage extends StatelessWidget {
             }
             return const SizedBox();
           },
+        ),*/
+        body: Center(
+          child: ElevatedButton(
+            child: Text("Start KYC"),
+              onPressed: () {
+                Navigator.pushNamed(context, "/KYC");
+              },
         ),
-      ),
+      )),
     );
   }
 }

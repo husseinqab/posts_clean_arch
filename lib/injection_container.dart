@@ -104,7 +104,7 @@ void init() {
 
 
   //core
-  sl.registerLazySingleton<RestHelper>(() => HttpHelper(client: sl()));
+  sl.registerFactory<RestHelper>(() => HttpHelper(client: sl()));
   sl.registerLazySingleton(() => GenericCall(networkInfo: sl()));
   // sl.registerLazySingleton<RestHelper>(() => DioHelper());
   sl.registerLazySingleton<NetworkInfo>(

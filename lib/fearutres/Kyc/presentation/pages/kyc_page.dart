@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,14 +66,14 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
     super.initState();
     context.read<KycProvider>().tabController = TabController(
         vsync: this, length: context.read<KycProvider>().tabBarViews.length);
-    context.read<KycProvider>().checkTheRightFlow();
+    context.read<KycProvider>().checkTheRightFlow(context);
     //_tabController = TabController(vsync: this, length: tabBarViews.length);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    Provider.of<KycProvider>(context).tabController.dispose();
+    //Provider.of<KycProvider>(context).tabController.dispose();
     super.dispose();
   }
 
@@ -135,10 +137,12 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
                   BlocProvider.of<UpdateDataBloc>(context).add(UpdateDataEvent(
                       request: UpdateDataRequest(
                           userId: provider.strigaUserId,
-                          firstName: "DoubleFinance",
-                          lastName: "User",
-                          dateOfBirth:
-                              DateOfBirth(day: 5, month: 10, year: 1994),
+                          firstName: "KYC",
+                          lastName: "ONE",
+                          dateOfBirth: DateOfBirth(
+                              day: provider.birthday.day,
+                              month: provider.birthday.month,
+                              year: provider.birthday.year),
                           address: Address(
                             addressLine1: provider.addressLine1,
                             city: provider.city,
@@ -152,8 +156,8 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
                           nationality: provider.nationality,
                           occupation: provider.occupation,
                           placeOfBirth: "IRQ",
-                          purposeOfAccount: "Something",
-                          purposeOfAccountOther: "Something",
+                          purposeOfAccount: "CRYPTO_PAYMENTS",
+                          purposeOfAccountOther: "CRYPTO_PAYMENTS",
                           selfPepDeclaration: provider.pepSelected,
                           sourceOfFunds: provider.sourceOfFunds,
                           sourceOfFundsOther: "Something")));
@@ -222,7 +226,7 @@ class RegisterInStrigaPage extends StatelessWidget {
                           showPhoneCode: true,
                           // optional. Shows phone code before the country name.
                           onSelect: (Country country) {
-                            provider.countryCode = country.phoneCode;
+                            provider.setCountryCode(country.phoneCode);
                           },
                         );
                       },
@@ -252,7 +256,8 @@ class RegisterInStrigaPage extends StatelessWidget {
               BlocListener<RegisterInStrigaBloc, RegisterStrigaState>(
                   listener: (context, state) {
                 if (state is RegisterStrigaLoaded) {
-                  provider.moveToVerifyEmail(context,state.registerStrigaResponse);
+                  provider.moveToVerifyEmail(
+                      context, state.registerStrigaResponse);
                 }
               }, child: BlocBuilder<RegisterInStrigaBloc, RegisterStrigaState>(
                 builder: (context, state) {
@@ -418,7 +423,7 @@ class UpdateUserPage extends StatelessWidget {
                 hint: 'Address Line 1',
                 height: 20,
                 textChanged: (value) {
-                  provider.addressLine1 = value;
+                  provider.setAddressLine1(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -429,7 +434,7 @@ class UpdateUserPage extends StatelessWidget {
                 hint: 'Address Line 2',
                 height: 20,
                 textChanged: (value) {
-                  provider.addressLine2 = value;
+                  provider.setAddressLine2(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -440,7 +445,7 @@ class UpdateUserPage extends StatelessWidget {
                 hint: 'City',
                 height: 20,
                 textChanged: (value) {
-                  provider.city = value;
+                  provider.setCity(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -450,7 +455,7 @@ class UpdateUserPage extends StatelessWidget {
                 hint: 'Postal code',
                 height: 20,
                 textChanged: (value) {
-                  provider.postalCode = value;
+                  provider.setPostalCode(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -460,7 +465,7 @@ class UpdateUserPage extends StatelessWidget {
                 hint: 'Province',
                 height: 20,
                 textChanged: (value) {
-                  provider.province = value;
+                  provider.setProvince(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -473,7 +478,7 @@ class UpdateUserPage extends StatelessWidget {
                     showPhoneCode: false,
                     // optional. Shows phone code before the country name.
                     onSelect: (Country country) {
-                      provider.country = country;
+                      provider.setCountry(country);
                     },
                   );
                 },
@@ -495,7 +500,7 @@ class UpdateUserPage extends StatelessWidget {
                     showPhoneCode: false,
                     // optional. Shows phone code before the country name.
                     onSelect: (Country country) {
-                      provider.nationality = country;
+                      provider.setNationality(country);
                     },
                   );
                 },
@@ -518,8 +523,7 @@ class UpdateUserPage extends StatelessWidget {
                       lastDate: DateTime(DateTime.now().year - 18,
                           DateTime.now().month, DateTime.now().day));
                   if (picked != null) {
-                    provider.birthday =
-                        DateFormat('yyyy-MM-dd').format(picked!);
+                    provider.setBirthday(picked);
                   }
                 },
                 validator: provider.birthdayValidator,
@@ -537,7 +541,7 @@ class UpdateUserPage extends StatelessWidget {
                 hint: 'Occupation',
                 items: KycData.occupations,
                 onChanged: (value) {
-                  provider.occupation(value);
+                  provider.setOccupation(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -547,7 +551,7 @@ class UpdateUserPage extends StatelessWidget {
                 hint: 'Source Of funds',
                 items: KycData.sourceOfFunds,
                 onChanged: (value) {
-                  provider.sourceOfFunds(value);
+                  provider.setSourceOfFunds(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -559,7 +563,7 @@ class UpdateUserPage extends StatelessWidget {
                     showPhoneCode: false,
                     // optional. Shows phone code before the country name.
                     onSelect: (Country country) {
-                      provider.placeOfBirth = country;
+                      provider.setPlaceOfBirth(country);
                     },
                   );
                 },
@@ -575,20 +579,20 @@ class UpdateUserPage extends StatelessWidget {
               CustomDropDownWidget(
                 validator: provider.expectedIncomingValidator,
                 dropdownValue: provider.expectedIncomingTxVolumeYearly,
-                hint: provider.expectedIncomingTxVolumeYearly,
+                hint: 'Annually Expected Income',
                 items: KycData.expectedVolumeItems,
                 onChanged: (value) {
-                  provider.expectedIncomingTxVolumeYearly(value);
+                  provider.setExpectedIncomingTxVolumeYearly(value);
                 },
               ),
               const SizedBox(height: 20),
               CustomDropDownWidget(
                 validator: provider.expectedOutgoingValidator,
                 dropdownValue: provider.expectedOutgoingTxVolumeYearly,
-                hint: provider.expectedOutgoingTxVolumeYearly,
+                hint: 'Annually Expected Outgoing',
                 items: KycData.expectedVolumeItems,
                 onChanged: (value) {
-                  provider.expectedOutgoingTxVolumeYearly(value);
+                  provider.setExpectedOutgoingTxVolumeYearly(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -651,10 +655,10 @@ class UpdateUserPage extends StatelessWidget {
               const SizedBox(height: 20),
               BlocListener<UpdateDataBloc, VerifyIdentityState>(
                   listener: (context, state) {
-                    if (state is VerifyIdentityLoaded) {
-                      provider.startKYC(context);
-                    }
-                  }, child: BlocBuilder<UpdateDataBloc, VerifyIdentityState>(
+                if (state is VerifyIdentityLoaded) {
+                  provider.startKYC(context);
+                }
+              }, child: BlocBuilder<UpdateDataBloc, VerifyIdentityState>(
                 builder: (context, state) {
                   if (state is VerifyIdentityLoading) {
                     return const Center(
@@ -674,3 +678,15 @@ class UpdateUserPage extends StatelessWidget {
     );
   }
 }
+
+class FinalKycPage extends StatelessWidget {
+  const FinalKycPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+

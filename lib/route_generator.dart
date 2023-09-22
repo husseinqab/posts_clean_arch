@@ -53,6 +53,8 @@ class RouteGenerator {
         return RouteHelper.animatedPage(const PassengersPage());
       case "/KYC":
         return RouteHelper.animatedPage(const KycPage());
+      case "/FinalKYC":
+        return RouteHelper.animatedPage(const FinalKycPage());
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();
