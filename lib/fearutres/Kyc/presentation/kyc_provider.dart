@@ -1,6 +1,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:posts_clean_arch/core/sumsub_helper.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/pages/kyc_page.dart';
 
@@ -341,6 +342,7 @@ class KycProvider extends ChangeNotifier {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Start KYC')),
       );
+
     }
 
     notifyListeners();
@@ -400,6 +402,43 @@ class KycProvider extends ChangeNotifier {
       pepRequired = true;
     }
     notifyListeners();
+  }
+
+  void startKYC(BuildContext context) {
+    ///TODO CALL START KYC
+    var token = '';
+    SumsubHelper.launchSDK(token);
+  }
+
+  void checkTheRightFlow() {
+    ///TODO: GET USER FROM LOCAL STORAGE
+    String? strigaUser;
+    if (strigaUser != null){
+      ///TODO: CALL GET USER INFO
+      bool emailVerified = true;
+      bool phoneVerified = true;
+      String kycStatus = 'NOT_STARTED';
+
+      if (kycStatus == 'INITIALIZED'){
+        ///TODO: CALL START KYC
+        var token = '';
+        SumsubHelper.launchSDK(token);
+      } else if (kycStatus == 'NOT_STARTED') {
+        if (emailVerified & phoneVerified){
+          tabController.animateTo(3);
+        } else {
+          if (!emailVerified & !phoneVerified){
+            tabController
+                .animateTo(1);
+          }
+          if (emailVerified & !phoneVerified){
+            tabController.animateTo(2);
+          }
+        }
+      } else {
+        ///TODO SHOW PAGE WITH THE CURRENT KYC STATUS
+      }
+    }
   }
 
 }

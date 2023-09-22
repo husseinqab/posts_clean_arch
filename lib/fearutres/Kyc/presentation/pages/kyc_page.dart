@@ -64,6 +64,7 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
     super.initState();
     context.read<KycProvider>().tabController = TabController(
         vsync: this, length: context.read<KycProvider>().tabBarViews.length);
+    context.read<KycProvider>().checkTheRightFlow();
     //_tabController = TabController(vsync: this, length: tabBarViews.length);
   }
 
@@ -119,8 +120,6 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
                             request: VerifyIdentityRequest(
                                 userId: provider.strigaUserId,
                                 verificationId: provider.emailVCode)));
-                    /*provider.tabController
-                        .animateTo(provider.tabController.index + 1);*/
                   }
                 } else if (provider.tabController.index == 2) {
                   context.read<KycProvider>().validatePhoneVCode(context);
@@ -253,7 +252,7 @@ class RegisterInStrigaPage extends StatelessWidget {
               BlocListener<RegisterInStrigaBloc, RegisterStrigaState>(
                   listener: (context, state) {
                 if (state is RegisterStrigaLoaded) {
-                  //provider.moveToVerifyEmail(context,state.registerStrigaResponse);
+                  provider.moveToVerifyEmail(context,state.registerStrigaResponse);
                 }
               }, child: BlocBuilder<RegisterInStrigaBloc, RegisterStrigaState>(
                 builder: (context, state) {
@@ -262,9 +261,6 @@ class RegisterInStrigaPage extends StatelessWidget {
                       child: CircularProgressIndicator(),
                     );
                   } else if (state is RegisterStrigaFailed) {
-                    ///TODO: Remove later
-                    provider.tabController
-                        .animateTo(provider.tabController.index + 1);
                     return Center(child: Text(state.message));
                   }
                   return const SizedBox();
@@ -318,9 +314,6 @@ class VerifyMailPage extends StatelessWidget {
                         child: CircularProgressIndicator(),
                       );
                     } else if (state is VerifyIdentityFailed) {
-                      ///TODO:Remove later
-                      provider.tabController
-                          .animateTo(provider.tabController.index + 1);
                       return Center(child: Text(state.message));
                     }
                     return const SizedBox();
@@ -374,9 +367,6 @@ class VerifyPhonePage extends StatelessWidget {
                         child: CircularProgressIndicator(),
                       );
                     } else if (state is VerifyIdentityFailed) {
-                      ///TODO:Remove later
-                      provider.tabController
-                          .animateTo(provider.tabController.index + 1);
                       return Center(child: Text(state.message));
                     }
                     return const SizedBox();
@@ -662,7 +652,7 @@ class UpdateUserPage extends StatelessWidget {
               BlocListener<UpdateDataBloc, VerifyIdentityState>(
                   listener: (context, state) {
                     if (state is VerifyIdentityLoaded) {
-                      //provider.startKYC(context);
+                      provider.startKYC(context);
                     }
                   }, child: BlocBuilder<UpdateDataBloc, VerifyIdentityState>(
                 builder: (context, state) {
@@ -672,8 +662,6 @@ class UpdateUserPage extends StatelessWidget {
                     );
                   } else if (state is VerifyIdentityFailed) {
                     ///TODO:Remove later
-                    /*provider.tabController
-                        .animateTo(provider.tabController.index + 1);*/
                     return Center(child: Text(state.message));
                   }
                   return const SizedBox();

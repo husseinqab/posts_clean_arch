@@ -42,6 +42,7 @@ dependencies:
   country_picker: ^2.0.21
   provider: ^6.0.5
   intl: ^0.18.1
+  flutter_idensic_mobile_sdk_plugin: ^1.27.0
 
 
   # The following adds the Cupertino Icons font to your application.
