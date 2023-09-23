@@ -66,7 +66,6 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
     super.initState();
     context.read<KycProvider>().tabController = TabController(
         vsync: this, length: context.read<KycProvider>().tabBarViews.length);
-    context.read<KycProvider>().checkTheRightFlow(context);
     //_tabController = TabController(vsync: this, length: tabBarViews.length);
   }
 
@@ -93,79 +92,132 @@ class _KycBodyState extends State<KycBody> with SingleTickerProviderStateMixin {
         ),
         bottomNavigationBar: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: RoundedButton(
-            title: 'Next',
-            onPressed: () {
-              if (provider.tabController.index < provider.tabBarViews.length) {
-                if (provider.tabController.index == 0) {
-                  context.read<KycProvider>().validateRegister(context);
-                  if (context.read<KycProvider>().isValidRegister()) {
-                    // Trigger EVENT
-                    BlocProvider.of<RegisterInStrigaBloc>(context).add(
-                        RegisterInStrigaEvent(
-                            request: RegisterStrigaRequest(
-                                firstName:
-                                    context.read<KycProvider>().firstName,
-                                lastName: context.read<KycProvider>().lastName,
-                                email: context.read<KycProvider>().email,
-                                mobile: Mobile(
-                                  countryCode:
-                                      context.read<KycProvider>().countryCode,
-                                  number: context.read<KycProvider>().phone,
-                                ))));
-                  }
-                } else if (provider.tabController.index == 1) {
-                  context.read<KycProvider>().validateEmailVCode(context);
-                  if (context.read<KycProvider>().isValidEmailCode()) {
-                    BlocProvider.of<VerifyEmailBloc>(context).add(
-                        VerifyEmailStrigaEvent(
-                            request: VerifyIdentityRequest(
+          child: Visibility(
+            visible: provider.currentIndex != 0,
+            child: RoundedButton(
+              title: 'Next',
+              onPressed: () {
+                if (provider.tabController.index <
+                    provider.tabBarViews.length) {
+                  if (provider.tabController.index == 1) {
+                    context.read<KycProvider>().validateRegister(context);
+                    if (context.read<KycProvider>().isValidRegister()) {
+                      // Trigger EVENT
+                      BlocProvider.of<RegisterInStrigaBloc>(context).add(
+                          RegisterInStrigaEvent(
+                              request: RegisterStrigaRequest(
+                                  firstName:
+                                      context.read<KycProvider>().firstName,
+                                  lastName:
+                                      context.read<KycProvider>().lastName,
+                                  email: context.read<KycProvider>().email,
+                                  mobile: Mobile(
+                                    countryCode:
+                                        context.read<KycProvider>().countryCode,
+                                    number: context.read<KycProvider>().phone,
+                                  ))));
+                    }
+                  } else if (provider.tabController.index == 2) {
+                    context.read<KycProvider>().validateEmailVCode(context);
+                    if (context.read<KycProvider>().isValidEmailCode()) {
+                      BlocProvider.of<VerifyEmailBloc>(context).add(
+                          VerifyEmailStrigaEvent(
+                              request: VerifyIdentityRequest(
+                                  userId: provider.strigaUserId,
+                                  verificationId: provider.emailVCode)));
+                    }
+                  } else if (provider.tabController.index == 3) {
+                    context.read<KycProvider>().validatePhoneVCode(context);
+                    if (context.read<KycProvider>().isValidPhoneCode()) {
+                      BlocProvider.of<VerifyPhoneBloc>(context).add(
+                          VerifyPhoneStrigaEvent(
+                              request: VerifyIdentityRequest(
+                                  userId: provider.strigaUserId,
+                                  verificationCode: provider.phoneVCode)));
+                    }
+                  } else if (provider.tabController.index == 4) {
+                    context.read<KycProvider>().validateUpdateData(context);
+                    BlocProvider.of<UpdateDataBloc>(context).add(
+                        UpdateDataEvent(
+                            request: UpdateDataRequest(
                                 userId: provider.strigaUserId,
-                                verificationId: provider.emailVCode)));
+                                firstName: "KYC",
+                                lastName: "ONE",
+                                dateOfBirth: DateOfBirth(
+                                    day: provider.birthday.day,
+                                    month: provider.birthday.month,
+                                    year: provider.birthday.year),
+                                address: Address(
+                                  addressLine1: provider.addressLine1,
+                                  city: provider.city,
+                                  country: provider.country,
+                                  postalCode: provider.postalCode,
+                                ),
+                                expectedIncomingTxVolumeYearly:
+                                    provider.expectedIncomingTxVolumeYearly,
+                                expectedOutgoingTxVolumeYearly:
+                                    provider.expectedOutgoingTxVolumeYearly,
+                                nationality: provider.nationality,
+                                occupation: provider.occupation,
+                                placeOfBirth: "IRQ",
+                                purposeOfAccount: "CRYPTO_PAYMENTS",
+                                purposeOfAccountOther: "CRYPTO_PAYMENTS",
+                                selfPepDeclaration: provider.pepSelected,
+                                sourceOfFunds: provider.sourceOfFunds,
+                                sourceOfFundsOther: "Something")));
                   }
-                } else if (provider.tabController.index == 2) {
-                  context.read<KycProvider>().validatePhoneVCode(context);
-                  if (context.read<KycProvider>().isValidPhoneCode()) {
-                    BlocProvider.of<VerifyPhoneBloc>(context).add(
-                        VerifyPhoneStrigaEvent(
-                            request: VerifyIdentityRequest(
-                                userId: provider.strigaUserId,
-                                verificationCode: provider.phoneVCode)));
-                  }
-                } else if (provider.tabController.index == 3) {
-                  context.read<KycProvider>().validateUpdateData(context);
-                  BlocProvider.of<UpdateDataBloc>(context).add(UpdateDataEvent(
-                      request: UpdateDataRequest(
-                          userId: provider.strigaUserId,
-                          firstName: "KYC",
-                          lastName: "ONE",
-                          dateOfBirth: DateOfBirth(
-                              day: provider.birthday.day,
-                              month: provider.birthday.month,
-                              year: provider.birthday.year),
-                          address: Address(
-                            addressLine1: provider.addressLine1,
-                            city: provider.city,
-                            country: provider.country,
-                            postalCode: provider.postalCode,
-                          ),
-                          expectedIncomingTxVolumeYearly:
-                              provider.expectedIncomingTxVolumeYearly,
-                          expectedOutgoingTxVolumeYearly:
-                              provider.expectedOutgoingTxVolumeYearly,
-                          nationality: provider.nationality,
-                          occupation: provider.occupation,
-                          placeOfBirth: "IRQ",
-                          purposeOfAccount: "CRYPTO_PAYMENTS",
-                          purposeOfAccountOther: "CRYPTO_PAYMENTS",
-                          selfPepDeclaration: provider.pepSelected,
-                          sourceOfFunds: provider.sourceOfFunds,
-                          sourceOfFundsOther: "Something")));
                 }
-              }
-            },
+              },
+            ),
           ),
         ),
+      );
+    });
+  }
+}
+
+class CheckTheRightFlow extends StatefulWidget {
+  const CheckTheRightFlow({super.key});
+
+  @override
+  State<CheckTheRightFlow> createState() => _CheckTheRightFlowState();
+}
+
+class _CheckTheRightFlowState extends State<CheckTheRightFlow> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    Future.microtask(() => context.read<KycProvider>().checkTheRightFlow(context));
+
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ///TODO CALL GET USER INFO
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text("Collecting Data"),
+        SizedBox(height: 20),
+        Center(
+          child: CircularProgressIndicator(),
+        )
+      ],
+    );
+    return Consumer<KycProvider>(builder: (_, provider, child) {
+      return const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text("Collecting Data"),
+          SizedBox(height: 20),
+          Center(
+            child: CircularProgressIndicator(),
+          )
+        ],
       );
     });
   }
@@ -689,4 +741,3 @@ class FinalKycPage extends StatelessWidget {
     );
   }
 }
-
