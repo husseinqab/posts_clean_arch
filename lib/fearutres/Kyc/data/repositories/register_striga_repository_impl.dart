@@ -4,6 +4,7 @@ import 'package:posts_clean_arch/fearutres/Kyc/data/datasources/register_striga_
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/update_data_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/user_info_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_request.dart';
 
 import '../../../../core/generic_api_calls.dart';
@@ -35,5 +36,10 @@ class RegisterStrigaRepositoryImpl extends RegisterStrigaRepository {
   Future<Either<Failure, String>> updateData(UpdateDataRequest request) async {
     return await callApi(() => remoteDataSource.updateData(request));
 
+  }
+
+  @override
+  Future<Either<Failure, UserInfoResponse>> getUserInfo() async {
+    return await callApi(() => remoteDataSource.getUserInfo());
   }
 }

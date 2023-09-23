@@ -43,3 +43,11 @@ class UpdateDataEvent extends StrigaEvent {
   // TODO: implement props
   List<Object?> get props => [request];
 }
+
+class UserInfoEvent extends StrigaEvent {
+  const UserInfoEvent();
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}

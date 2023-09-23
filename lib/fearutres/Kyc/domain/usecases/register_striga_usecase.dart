@@ -4,6 +4,7 @@ import 'package:posts_clean_arch/core/usecase.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/update_data_request.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/user_info_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/repositories/register_striga_repository.dart';
 import 'package:posts_clean_arch/fearutres/passengers/domain/entities/passenger.dart';
@@ -50,5 +51,16 @@ class UpdateDataStriga extends UseCase<String, UpdateDataRequest> {
   @override
   Future<Either<Failure, String>> call(UpdateDataRequest request) async {
     return await registerStrigaRepository.updateData(request);
+  }
+}
+
+class GetUserInfo extends UseCase<UserInfoResponse, NoParams> {
+  final RegisterStrigaRepository registerStrigaRepository;
+
+  GetUserInfo({required this.registerStrigaRepository});
+
+  @override
+  Future<Either<Failure, UserInfoResponse>> call(NoParams params) async {
+    return await registerStrigaRepository.getUserInfo();
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:posts_clean_arch/fearutres/Kyc/data/models/register_striga_model.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/data/models/user_info_model.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/update_data_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/regsiter_striga_request.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_request.dart';
@@ -16,6 +17,7 @@ abstract class RegisterStrigaDataSource {
   Future<String> verifyEmailStriga(VerifyIdentityRequest request);
   Future<String> verifyPhoneStriga(VerifyIdentityRequest request);
   Future<String> updateData(UpdateDataRequest request);
+  Future<UserInfoModel> getUserInfo();
 }
 
 class RegisterStrigaDataSourceImpl implements RegisterStrigaDataSource {
@@ -64,6 +66,18 @@ class RegisterStrigaDataSourceImpl implements RegisterStrigaDataSource {
       var body = await client.patch("https://sandbox.doublewallet.io/api/Users/UpdateUser", request.toJson());
 
       return "Done successfully";
+      //return jsonDecode(jsonEncode(body));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<UserInfoModel> getUserInfo() async {
+    try {
+      var body = await client.get("https://sandbox.doublewallet.io/api/Users/UpdateUser");
+
+      return userInfoModelFromJson(jsonEncode(body));
       //return jsonDecode(jsonEncode(body));
     } catch (e) {
       rethrow;
