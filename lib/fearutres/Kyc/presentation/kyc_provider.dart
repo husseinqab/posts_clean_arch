@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:posts_clean_arch/core/constants/kyc_status.dart';
 import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/core/sumsub_helper.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
@@ -236,6 +237,7 @@ class KycProvider extends ChangeNotifier {
     sourceOfFunds = value;
     notifyListeners();
   }
+  String? Function(String?)? purposeOfAccountValidator = globalValidator;
 
   var purposeOfAccount = '';
 
@@ -430,7 +432,7 @@ class KycProvider extends ChangeNotifier {
     String? strigaUser;
     bool emailVerified = false;
     bool phoneVerified = false;
-    String kycStatus = 'NOT_STARTED';
+    String kycStatus = KycStatus.NOT_STARTED.name;
     if (userInfo != null){
        strigaUser = userInfo.userId;
       strigaUserId= userInfo.userId!;
@@ -440,9 +442,9 @@ class KycProvider extends ChangeNotifier {
     }
     if (strigaUser != null) {
 
-      if (kycStatus == 'INITIATED') {
+      if (kycStatus == KycStatus.INITIATED.name) {
         startKYC(context);
-      } else if (kycStatus == 'NOT_STARTED') {
+      } else if (kycStatus == KycStatus.NOT_STARTED.name) {
         if (emailVerified & phoneVerified) {
           startKYC(context);
         } else {

@@ -3,9 +3,6 @@ class UserInfoResponse {
   final String lastName;
   final String email;
   final String? nationality;
-  final DateOfBirth? dateOfBirth;
-  final Mobile mobile;
-  final Address? address;
   final String? occupation;
   final String? sourceOfFunds;
   final String? purposeOfAccount;
@@ -25,9 +22,6 @@ class UserInfoResponse {
     required this.lastName,
     required this.email,
     required this.nationality,
-    required this.dateOfBirth,
-    required this.mobile,
-    required this.address,
     required this.occupation,
     required this.sourceOfFunds,
     required this.purposeOfAccount,
@@ -43,86 +37,6 @@ class UserInfoResponse {
     required this.twoFactorEnabled,
   });
 
-}
-
-class Address {
-  final String addressLine1;
-  final dynamic addressLine2;
-  final String city;
-  final String postalCode;
-  final String country;
-
-  Address({
-    required this.addressLine1,
-    required this.addressLine2,
-    required this.city,
-    required this.postalCode,
-    required this.country,
-  });
-
-  factory Address.fromJson(Map<String, dynamic>? json) {
-    if (json == null) {
-      return Address(
-        addressLine1: '',
-        addressLine2: '',
-        city: '',
-        postalCode: '',
-        country: '',
-      );
-    }
-
-    return Address(
-      addressLine1: json["addressLine1"],
-      addressLine2: json["addressLine2"],
-      city: json["city"],
-      postalCode: json["postalCode"],
-      country: json["country"],
-    );
-  }
-
-  Map<String, dynamic> toJson() =>
-      {
-        "addressLine1": addressLine1,
-        "addressLine2": addressLine2,
-        "city": city,
-        "postalCode": postalCode,
-        "country": country,
-      };
-}
-
-class DateOfBirth {
-  final String month;
-  final String day;
-  final String year;
-
-  DateOfBirth({
-    required this.month,
-    required this.day,
-    required this.year,
-  });
-
-  factory DateOfBirth.fromJson(Map<String, dynamic>? json) {
-    if (json == null){
-      return DateOfBirth(
-        month: '',
-        day:  '',
-        year: '',
-      );
-    }
-
-    return DateOfBirth(
-      month: json["month"] ?? '',
-      day: json["day"] ?? '',
-      year: json["year"] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() =>
-      {
-        "month": month,
-        "day": day,
-        "year": year,
-      };
 }
 
 class Kyc {
@@ -198,27 +112,5 @@ class RejectionComments {
       {
         "userComment": userComment,
         "autoComment": autoComment,
-      };
-}
-
-class Mobile {
-  final String countryCode;
-  final String number;
-
-  Mobile({
-    required this.countryCode,
-    required this.number,
-  });
-
-  factory Mobile.fromJson(Map<String, dynamic> json) =>
-      Mobile(
-        countryCode: json["countryCode"],
-        number: json["number"],
-      );
-
-  Map<String, dynamic> toJson() =>
-      {
-        "countryCode": countryCode,
-        "number": number,
       };
 }
