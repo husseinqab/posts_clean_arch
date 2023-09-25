@@ -1,24 +1,23 @@
-
 class UserInfoResponse {
   final String firstName;
   final String lastName;
   final String email;
-  final String nationality;
-  final DateOfBirth dateOfBirth;
+  final String? nationality;
+  final DateOfBirth? dateOfBirth;
   final Mobile mobile;
-  final Address address;
-  final String occupation;
-  final String sourceOfFunds;
-  final String purposeOfAccount;
-  final bool selfPepDeclaration;
-  final String placeOfBirth;
-  final String expectedIncomingTxVolumeYearly;
-  final String expectedOutgoingTxVolumeYearly;
-  final Kyc kyc;
-  final String userId;
-  final int createdAt;
-  final String sourceOfFundsOther;
-  final String purposeOfAccountOther;
+  final Address? address;
+  final String? occupation;
+  final String? sourceOfFunds;
+  final String? purposeOfAccount;
+  final bool? selfPepDeclaration;
+  final String? placeOfBirth;
+  final String? expectedIncomingTxVolumeYearly;
+  final String? expectedOutgoingTxVolumeYearly;
+  final Kyc? kyc;
+  final String? userId;
+  final int? createdAt;
+  final String? sourceOfFundsOther;
+  final String? purposeOfAccountOther;
   final bool twoFactorEnabled;
 
   UserInfoResponse({
@@ -61,21 +60,34 @@ class Address {
     required this.country,
   });
 
-  factory Address.fromJson(Map<String, dynamic> json) => Address(
-    addressLine1: json["addressLine1"],
-    addressLine2: json["addressLine2"],
-    city: json["city"],
-    postalCode: json["postalCode"],
-    country: json["country"],
-  );
+  factory Address.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Address(
+        addressLine1: '',
+        addressLine2: '',
+        city: '',
+        postalCode: '',
+        country: '',
+      );
+    }
 
-  Map<String, dynamic> toJson() => {
-    "addressLine1": addressLine1,
-    "addressLine2": addressLine2,
-    "city": city,
-    "postalCode": postalCode,
-    "country": country,
-  };
+    return Address(
+      addressLine1: json["addressLine1"],
+      addressLine2: json["addressLine2"],
+      city: json["city"],
+      postalCode: json["postalCode"],
+      country: json["country"],
+    );
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "addressLine1": addressLine1,
+        "addressLine2": addressLine2,
+        "city": city,
+        "postalCode": postalCode,
+        "country": country,
+      };
 }
 
 class DateOfBirth {
@@ -89,17 +101,28 @@ class DateOfBirth {
     required this.year,
   });
 
-  factory DateOfBirth.fromJson(Map<String, dynamic> json) => DateOfBirth(
-    month: json["month"],
-    day: json["day"],
-    year: json["year"],
-  );
+  factory DateOfBirth.fromJson(Map<String, dynamic>? json) {
+    if (json == null){
+      return DateOfBirth(
+        month: '',
+        day:  '',
+        year: '',
+      );
+    }
 
-  Map<String, dynamic> toJson() => {
-    "month": month,
-    "day": day,
-    "year": year,
-  };
+    return DateOfBirth(
+      month: json["month"] ?? '',
+      day: json["day"] ?? '',
+      year: json["year"] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "month": month,
+        "day": day,
+        "year": year,
+      };
 }
 
 class Kyc {
@@ -117,21 +140,34 @@ class Kyc {
     required this.status,
   });
 
-  factory Kyc.fromJson(Map<String, dynamic> json) => Kyc(
-    details: json["details"],
-    rejectionComments: RejectionComments.fromJson(json["rejectionComments"]),
-    emailVerified: json["emailVerified"],
-    mobileVerified: json["mobileVerified"],
-    status: json["status"],
-  );
+  factory Kyc.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Kyc(
+        details: null,
+        rejectionComments: RejectionComments.fromJson(null),
+        emailVerified: false,
+        mobileVerified: false,
+        status: '',
+      );
+    }
 
-  Map<String, dynamic> toJson() => {
-    "details": details,
-    "rejectionComments": rejectionComments.toJson(),
-    "emailVerified": emailVerified,
-    "mobileVerified": mobileVerified,
-    "status": status,
-  };
+    return Kyc(
+      details: json["details"],
+      rejectionComments: RejectionComments.fromJson(json["rejectionComments"] ?? {}),
+      emailVerified: json["emailVerified"] ?? false,
+      mobileVerified: json["mobileVerified"] ?? false,
+      status: json["status"] ?? 'NOT_STARTED',
+    );
+  }
+
+  Map<String, dynamic> toJson() =>
+      {
+        "details": details,
+        "rejectionComments": rejectionComments.toJson(),
+        "emailVerified": emailVerified,
+        "mobileVerified": mobileVerified,
+        "status": status,
+      };
 }
 
 class RejectionComments {
@@ -143,15 +179,26 @@ class RejectionComments {
     required this.autoComment,
   });
 
-  factory RejectionComments.fromJson(Map<String, dynamic> json) => RejectionComments(
-    userComment: json["userComment"],
-    autoComment: json["autoComment"],
-  );
+  factory RejectionComments.fromJson(Map<String, dynamic>? json) {
+    if (json == null){
+      return RejectionComments(
+        userComment:  '',
+        autoComment:  '',
+      );
+    }
 
-  Map<String, dynamic> toJson() => {
-    "userComment": userComment,
-    "autoComment": autoComment,
-  };
+    return RejectionComments(
+      userComment: json["userComment"] ?? '',
+      autoComment: json["autoComment"] ?? '',
+    );
+  }
+
+
+  Map<String, dynamic> toJson() =>
+      {
+        "userComment": userComment,
+        "autoComment": autoComment,
+      };
 }
 
 class Mobile {
@@ -163,13 +210,15 @@ class Mobile {
     required this.number,
   });
 
-  factory Mobile.fromJson(Map<String, dynamic> json) => Mobile(
-    countryCode: json["countryCode"],
-    number: json["number"],
-  );
+  factory Mobile.fromJson(Map<String, dynamic> json) =>
+      Mobile(
+        countryCode: json["countryCode"],
+        number: json["number"],
+      );
 
-  Map<String, dynamic> toJson() => {
-    "countryCode": countryCode,
-    "number": number,
-  };
+  Map<String, dynamic> toJson() =>
+      {
+        "countryCode": countryCode,
+        "number": number,
+      };
 }

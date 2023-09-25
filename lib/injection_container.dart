@@ -101,6 +101,10 @@ void init() {
   sl.registerFactory(() => UpdateDataBloc(sl()));
   //usecase
   sl.registerLazySingleton(() => UpdateDataStriga(registerStrigaRepository: sl()));
+  ///feature: UserInfo
+  sl.registerFactory(() => UserInfoBloc(sl()));
+  //usecase
+  sl.registerLazySingleton(() => GetUserInfo(registerStrigaRepository: sl()));
 
 
   //core

@@ -14,6 +14,7 @@ import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/verify_identity_r
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_bloc.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_event.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/register_striga_state.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/user_info_state.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/bloc/verify_identity_state.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/kyc_provider.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +46,10 @@ class _KycPageState extends State<KycPage> {
         BlocProvider<UpdateDataBloc>(
           create: (context) => sl<UpdateDataBloc>(),
         ),
+        BlocProvider<UserInfoBloc>(
+          create: (context) => sl<UserInfoBloc>()..add(const UserInfoEvent()),
+        ),
+
       ],
       child: ChangeNotifierProvider(
           create: (_) => KycProvider(), child: const KycBody()),
@@ -187,8 +192,6 @@ class _CheckTheRightFlowState extends State<CheckTheRightFlow> {
   @override
   void initState() {
     // TODO: implement initState
-    Future.microtask(() => context.read<KycProvider>().checkTheRightFlow(context));
-
 
     super.initState();
   }
@@ -196,16 +199,46 @@ class _CheckTheRightFlowState extends State<CheckTheRightFlow> {
   @override
   Widget build(BuildContext context) {
     ///TODO CALL GET USER INFO
-    return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text("Collecting Data"),
-        SizedBox(height: 20),
-        Center(
-          child: CircularProgressIndicator(),
-        )
-      ],
+    return BlocListener<UserInfoBloc, UserInfoState>(
+      listener: (context, state) {
+        // TODO: implement listener
+        Future.microtask(
+                () => context.read<KycProvider>().checkTheRightFlow(context,state.userInfoResponse!));
+
+      },
+      child: BlocBuilder<UserInfoBloc, UserInfoState>(
+        builder: (context, state) {
+          if (state is UserInfoLoading) {
+            return const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Collecting Data"),
+                SizedBox(height: 20),
+                Center(
+                  child: CircularProgressIndicator(),
+                )
+              ],
+            );
+          } else if (state is UserInfoFailed) {
+            ///TODO: REMOVE LATER
+            ///API shouldn't fail if user doesn't exist on striga yet
+            /*Future.microtask(
+                    () => context.read<KycProvider>().checkTheRightFlow(context,null));*/
+            return Center(child: Text(state.message));
+          } else if (state is UserInfoLoaded){
+            ///TODO: Handle better
+            return Center(
+              child: ElevatedButton(onPressed: (){
+                Future.microtask(
+                        () => context.read<KycProvider>().checkTheRightFlow(context,state.userInfoResponse!));
+              }, child: const Text("Try again")),
+            );
+          }
+          return const SizedBox();
+
+        },
+      ),
     );
     return Consumer<KycProvider>(builder: (_, provider, child) {
       return const Column(

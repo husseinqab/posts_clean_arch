@@ -75,7 +75,7 @@ class RegisterStrigaDataSourceImpl implements RegisterStrigaDataSource {
   @override
   Future<UserInfoModel> getUserInfo() async {
     try {
-      var body = await client.get("https://sandbox.doublewallet.io/api/Users/UpdateUser");
+      var body = await client.get("https://sandbox.doublewallet.io/connect/userinfo");
 
       return userInfoModelFromJson(jsonEncode(body));
       //return jsonDecode(jsonEncode(body));

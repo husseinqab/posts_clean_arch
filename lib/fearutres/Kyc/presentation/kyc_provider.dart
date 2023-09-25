@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:posts_clean_arch/core/httpHelper.dart';
 import 'package:posts_clean_arch/core/sumsub_helper.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/register_striga_response.dart';
+import 'package:posts_clean_arch/fearutres/Kyc/domain/entities/user_info_response.dart';
 import 'package:posts_clean_arch/fearutres/Kyc/presentation/pages/kyc_page.dart';
 
 class KycProvider extends ChangeNotifier {
@@ -77,12 +78,17 @@ class KycProvider extends ChangeNotifier {
   bool isValidRegister() {
     return registerFormKey.currentState!.validate();
   }
+  var nextIsDisabled = false;
+  void enableNext(){
+    nextIsDisabled = false;
+  }
 
+  void disableNext(){
+    nextIsDisabled = true;
+  }
   validateRegister(BuildContext context) {
     if (registerFormKey.currentState!.validate()) {
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registered on striga')),
-      );*/
+      disableNext();
     }
     notifyListeners();
   }
@@ -90,12 +96,13 @@ class KycProvider extends ChangeNotifier {
   var strigaUserId = '3a4e6072-9a66-4ff5-97b7-9393edc9103c';
 
   moveToVerifyEmail(BuildContext context, RegisterStrigaResponse response) {
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Registered on striga')),
     );
     tabController.animateTo(tabController.index + 1);
     currentIndex = 2;
-
+    enableNext();
     /// TODO: STORE ON LOCAL STORAGE AND TAKE FROM THERE
     strigaUserId = response.userId;
     notifyListeners();
@@ -115,6 +122,7 @@ class KycProvider extends ChangeNotifier {
 
   validateEmailVCode(BuildContext context) {
     if (emailVFormKey.currentState!.validate()) {
+      disableNext();
       /*ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Email Verified')),
       );*/
@@ -147,6 +155,7 @@ class KycProvider extends ChangeNotifier {
 
   validatePhoneVCode(BuildContext context) {
     if (phoneVFormKey.currentState!.validate()) {
+      disableNext();
       /*ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Phone Verified')),
       );*/
@@ -155,11 +164,13 @@ class KycProvider extends ChangeNotifier {
   }
 
   moveToVerifyPhone(BuildContext context) {
+    enableNext();
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Verified mail successfully')),
     );
     tabController.animateTo(tabController.index + 1);
     currentIndex = 3;
+    enableNext();
     notifyListeners();
   }
 
@@ -180,6 +191,7 @@ class KycProvider extends ChangeNotifier {
     );
     tabController.animateTo(tabController.index + 1);
     currentIndex = 4;
+    enableNext();
     notifyListeners();
   }
 
@@ -318,6 +330,7 @@ class KycProvider extends ChangeNotifier {
   final updateDataFormKey = GlobalKey<FormState>();
 
   validateUpdateData(BuildContext context) {
+    disableNext();
 /*    if (updateDataFormKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Start KYC')),
@@ -395,14 +408,16 @@ class KycProvider extends ChangeNotifier {
 
     if (response.statusCode == 200) {
       var apiResponse = apiResponseFromJson(response.body);
-      if (response.statusCode == 200) {
+      if (apiResponse.statusCode == 200) {
         // Navigator.pushNamed(context, "/FinalKYC");
         token = apiResponse.data["token"];
+        disableNext();
         SumsubHelper.launchSDK(token);
-      } else if (response.statusCode == 30032) {
+      } else if (apiResponse.statusCode == 30032 || apiResponse.statusCode == 400) {
         tabController.animateTo(4);
       }
     } else {
+      ///TODO: Do something here
       // Navigator.pushNamed(context, "/FinalKYC");
     }
     notifyListeners();
@@ -410,18 +425,22 @@ class KycProvider extends ChangeNotifier {
 
   var currentIndex = 0;
 
-  void checkTheRightFlow(BuildContext context) async {
+  void checkTheRightFlow(BuildContext context,UserInfoResponse? userInfo) async {
     ///TODO: GET USER FROM LOCAL STORAGE
-    String? strigaUser = 'dd';
+    String? strigaUser;
+    bool emailVerified = false;
+    bool phoneVerified = false;
+    String kycStatus = 'NOT_STARTED';
+    if (userInfo != null){
+       strigaUser = userInfo.userId;
+      strigaUserId= userInfo.userId!;
+      emailVerified = userInfo.kyc!.emailVerified;
+      phoneVerified = userInfo.kyc!.mobileVerified;
+      kycStatus = userInfo.kyc!.status;
+    }
     if (strigaUser != null) {
-      ///TODO: CALL GET USER INFO
-      bool emailVerified = true;
-      bool phoneVerified = true;
-      String kycStatus = 'NOT_STARTED';
 
       if (kycStatus == 'INITIATED') {
-        ///TODO: CALL START KYC
-        // Navigator.pushNamed(context, "/FinalKYC");
         startKYC(context);
       } else if (kycStatus == 'NOT_STARTED') {
         if (emailVerified & phoneVerified) {
@@ -437,7 +456,6 @@ class KycProvider extends ChangeNotifier {
           }
         }
       } else {
-        //tabController.animateTo(4);
         ///TODO SHOW PAGE WITH THE CURRENT KYC STATUS
       }
     } else {
@@ -447,7 +465,3 @@ class KycProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-
-var globalAccessToken = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IlNKOTcwU1dSQ0xTSjdFS0hPRTdKX0k0R05YS1MtS0tHVUhZU0hNQkkiLCJ0eXAiOiJhdCtqd3QifQ.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIxZjA2MThmLWQ4YzQtNDliMC1hMjEwLTUwNTI2OGYxZjJlZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJreWMxQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imt5YzFAZ21haWwuY29tIiwicmVmZXJyYWwiOiJkZmkiLCJvaV9wcnN0IjoidGVzdC1kb3VibGV3YWxsZXQtd2ViIiwiaXNzIjoiaHR0cHM6Ly9zYW5kYm94LmRvdWJsZXdhbGxldC5pby8iLCJvaV9hdV9pZCI6IjlmZmI2YzUwLTJkMGMtNDk0Yi1iNzI1LTM2NTM2ZTI2NWY2ZCIsInN1YiI6IjIxZjA2MThmLWQ4YzQtNDliMC1hMjEwLTUwNTI2OGYxZjJlZCIsIm5hbWUiOiJreWMxQGdtYWlsLmNvbSIsImVtYWlsIjoia3ljMUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6IlRydWUiLCJjbGllbnRfaWQiOiJ0ZXN0LWRvdWJsZXdhbGxldC13ZWIiLCJvaV90a25faWQiOiI4ZjA0ZTk4Ny1lNzZjLTRhYTEtYWVkOC05N2M0MjE1Y2Y5M2IiLCJzY29wZSI6InBob25lIGVtYWlsIHByb2ZpbGUgcm9sZXMiLCJqdGkiOiI1MGIzM2JhNi05NDM2LTRkZWUtYWNiZC02NWZlYTM1MmQ1ZWQiLCJleHAiOjE2OTU0NjU2MDYsImlhdCI6MTY5NTQ2MzgwNn0.WEQAf7uIa2sKp4_-AjppxccxTa-JxzX43mvNHJ6gTXwPdzjnsYqaYGXzW50V67gGLoP3-miQqdsEwifV2jdvKo5eAs0v3c26caNVtE4yZsZugHFAGf4CgPzi1lgQjl0JWnm6gak3CDGs8Fl7ozUsZ6rcXN9xGCuetvnHP9_oBntCmpfoXYqES7TsMsIOxfILE3bgKXG0jWGK62ftut8Wh3rXO3bhX1zyN1_hSApHUbC5f7hutk9FAJhYyGC23_IMXccaXkUw026MRbCjI-6s0oMKxU3-VM47hM26iUozFFMWNtIM89MA1zSx4tfF6CcJ2B5209kd6UzJZPC60JQtmg';
-
